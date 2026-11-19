@@ -2768,6 +2768,11 @@ if (templateDropdown) {
         updateTemplateUI();
         templateDropdown.classList.remove('show');
         showToast(activeTemplate === 'none' ? 'Template cleared' : `Template set: ${activeTemplate}`, 'info', 2000);
+
+        // Auto-refine with the new template if there's text
+        if (activeTemplate !== 'none' && textContent.original && btnRefine && !btnRefine.disabled) {
+            btnRefine.click();
+        }
     });
 }
 
