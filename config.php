@@ -1,6 +1,8 @@
 <?php
 // API Keys — this file is blocked from browser access via .htaccess
-define('PADDLE_API_KEY', 'pdl_live_apikey_01khkttj1zx3chj1tb7q8yymss_MJQPb92ntxTwsQg799b8X1_AQ3');
+// PADDLE_API_KEY is now stored as a Cloudflare Worker secret (env.PADDLE_API_KEY)
+// To set it: wrangler secret put PADDLE_API_KEY
+define('PADDLE_API_KEY', getenv('PADDLE_API_KEY') ?: '');
 
 // Paddle webhook secret — copy from Paddle Dashboard → Notifications → your endpoint → Secret key
 define('PADDLE_WEBHOOK_SECRET', 'YOUR_WEBHOOK_SECRET_HERE');
