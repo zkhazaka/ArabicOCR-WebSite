@@ -280,6 +280,10 @@ function showStep(stepName) {
         // Optional: Update progress bar if needed, or leave at step 1
         updateProgress(2);
     }
+    // Show/hide chat bubble based on result visibility
+    if (typeof updateChatBubbleVisibility === 'function') {
+        updateChatBubbleVisibility();
+    }
 }
 
 function updateProgress(step) {
@@ -419,6 +423,9 @@ if (cancelPdfSelectionBtn) {
 }
 
 function showPdfSelectionModal(file) {
+    selectedPages.clear();
+    if (pdfSelectAll) pdfSelectAll.checked = false;
+    updateBatchSelectionUI();
     pdfSelectionModal.classList.remove('hidden');
     renderAvailablePdfPages(file);
 }
@@ -436,6 +443,7 @@ async function renderAvailablePdfPages(file) {
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
         pdfPagesGrid.innerHTML = ''; // Clear loading spinner
+        batchPdfDoc = pdf; // Store for batch processing
 
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
@@ -472,11 +480,27 @@ async function renderAvailablePdfPages(file) {
             selectBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Scan';
             overlay.appendChild(selectBtn);
 
+            // Batch selection checkbox
+            const checkbox = document.createElement('div');
+            checkbox.className = 'pdf-page-checkbox';
+            checkbox.dataset.page = i;
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const pageNum = parseInt(checkbox.dataset.page);
+                if (selectedPages.has(pageNum)) {
+                    selectedPages.delete(pageNum);
+                } else {
+                    selectedPages.add(pageNum);
+                }
+                updateBatchSelectionUI();
+            });
+
+            pageContainer.appendChild(checkbox);
             pageContainer.appendChild(imgWrapper);
             pageContainer.appendChild(badge);
             pageContainer.appendChild(overlay);
 
-            // Click Handler
+            // Click Handler (single page scan)
             pageContainer.onclick = () => selectPdfPage(pdf, i);
 
             pdfPagesGrid.appendChild(pageContainer);
@@ -687,6 +711,10 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
             }
 
             showStep('result');
+            // Auto-detect document type and show smart suggestion
+            if (typeof showSmartSuggestion === 'function') {
+                showSmartSuggestion(fullText);
+            }
         }
     } catch (error) {
         console.error("OCR Error", error);
@@ -733,6 +761,14 @@ function hideResultTabs() {
             tab.classList.add('hidden');
         }
     });
+    // Also hide tables tab
+    if (typeof tabTables !== 'undefined' && tabTables) {
+        tabTables.disabled = true;
+        tabTables.classList.add('hidden');
+    }
+    // Hide smart suggestion banner
+    const smartSuggestion = document.getElementById('smart-suggestion');
+    if (smartSuggestion) smartSuggestion.classList.remove('show');
 }
 
 if (btnBack) {
@@ -742,6 +778,10 @@ if (btnBack) {
         quill.setText('');
         textContent = { original: '', refined: '', summary: '', translation: '' }; // Reset State
         hideResultTabs();
+        // Reset chat state
+        if (typeof chatHistory !== 'undefined') chatHistory.length = 0;
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) chatMessages.innerHTML = '';
         showStep('upload');
     });
 }
@@ -753,6 +793,10 @@ if (btnNewScan) {
         quill.setText('');
         textContent = { original: '', refined: '', summary: '', translation: '' }; // Reset State
         hideResultTabs();
+        // Reset chat state
+        if (typeof chatHistory !== 'undefined') chatHistory.length = 0;
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) chatMessages.innerHTML = '';
         showStep('upload');
     });
 }
@@ -1029,7 +1073,7 @@ function switchTab(type) {
     // console.log("Current textContent:", textContent); // Verbose
 
     // Reset styles
-    [tabOriginal, tabRefine, tabSummary, tabTranslation, tabImageViewer].forEach(tab => {
+    [tabOriginal, tabRefine, tabSummary, tabTranslation, tabTables, tabImageViewer].forEach(tab => {
         if (tab) {
             tab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
             tab.classList.add('text-gray-500');
@@ -1042,6 +1086,7 @@ function switchTab(type) {
     else if (type === 'refine') activeTab = tabRefine;
     else if (type === 'summary') activeTab = tabSummary;
     else if (type === 'translation') activeTab = tabTranslation;
+    else if (type === 'tables') activeTab = tabTables;
     else if (type === 'image') activeTab = tabImageViewer;
 
     if (activeTab) {
@@ -1049,18 +1094,24 @@ function switchTab(type) {
         activeTab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
     }
 
+    // Hide all content views
+    if (imageViewerContainer) imageViewerContainer.classList.add('hidden');
+    if (tablesViewerContainer) tablesViewerContainer.classList.add('hidden');
+
     // Toggle Content Views
     if (type === 'image') {
         if (editorContainer) editorContainer.classList.add('hidden');
         if (imageViewerContainer) imageViewerContainer.classList.remove('hidden');
 
-        // Sync Image Source if needed (it should be set during OCR process, but let's be safe)
         if (sourceImage && resultSourceImage && (!resultSourceImage.src || resultSourceImage.src === window.location.href)) {
             resultSourceImage.src = sourceImage.src;
         }
 
+    } else if (type === 'tables') {
+        if (editorContainer) editorContainer.classList.add('hidden');
+        if (tablesViewerContainer) tablesViewerContainer.classList.remove('hidden');
+
     } else {
-        if (imageViewerContainer) imageViewerContainer.classList.add('hidden');
         if (editorContainer) editorContainer.classList.remove('hidden');
 
         // Set Editor Text
@@ -1117,6 +1168,13 @@ if (tabImageViewer) {
     tabImageViewer.onclick = (e) => {
         e.preventDefault();
         switchTab('image');
+    };
+}
+if (typeof tabTables !== 'undefined' && tabTables) {
+    tabTables.onclick = (e) => {
+        e.preventDefault();
+        if (tabTables.disabled) return;
+        switchTab('tables');
     };
 }
 
@@ -1482,7 +1540,14 @@ window.loadHistoryItem = function (id) {
 
         switchTab('original');
         showWizardView();
+        // Reset chat for new document
+        if (typeof chatHistory !== 'undefined') chatHistory.length = 0;
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) chatMessages.innerHTML = '';
         showStep('result');
+        if (typeof showSmartSuggestion === 'function') {
+            showSmartSuggestion(item.text);
+        }
     }
 };
 
@@ -1879,6 +1944,458 @@ async function exportAsDocx(html, plainText, filename) {
     const blob = await Packer.toBlob(doc);
     downloadBlob(blob, `${filename}.docx`);
     showToast('Downloaded as DOCX', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MULTI-PAGE BATCH OCR
+// ═══════════════════════════════════════════════════════════════════
+
+let batchPdfDoc = null;
+let selectedPages = new Set();
+
+const pdfSelectAll = document.getElementById('pdf-select-all');
+const pdfSelectedCount = document.getElementById('pdf-selected-count');
+const btnScanSelected = document.getElementById('btn-scan-selected');
+const scanSelectedCount = document.getElementById('scan-selected-count');
+
+function updateBatchSelectionUI() {
+    const count = selectedPages.size;
+    if (pdfSelectedCount) pdfSelectedCount.textContent = count > 0 ? `${count} selected` : '';
+    if (scanSelectedCount) scanSelectedCount.textContent = count;
+    if (btnScanSelected) {
+        if (count > 1) {
+            btnScanSelected.classList.remove('hidden');
+        } else {
+            btnScanSelected.classList.add('hidden');
+        }
+    }
+    // Update checkboxes
+    document.querySelectorAll('.pdf-page-checkbox').forEach(cb => {
+        const pageNum = parseInt(cb.dataset.page);
+        if (selectedPages.has(pageNum)) {
+            cb.classList.add('checked');
+        } else {
+            cb.classList.remove('checked');
+        }
+    });
+}
+
+if (pdfSelectAll) {
+    pdfSelectAll.addEventListener('change', () => {
+        if (!batchPdfDoc) return;
+        if (pdfSelectAll.checked) {
+            for (let i = 1; i <= batchPdfDoc.numPages; i++) selectedPages.add(i);
+        } else {
+            selectedPages.clear();
+        }
+        updateBatchSelectionUI();
+    });
+}
+
+if (btnScanSelected) {
+    btnScanSelected.addEventListener('click', () => {
+        if (selectedPages.size < 2 || !batchPdfDoc) return;
+        processBatchOCR(batchPdfDoc, Array.from(selectedPages).sort((a, b) => a - b));
+    });
+}
+
+async function processBatchOCR(pdfDoc, pageNumbers) {
+    pdfSelectionModal.classList.add('hidden');
+    currentFileSource = 'pdf_page';
+    showStep('processing');
+
+    const totalPages = pageNumbers.length;
+    let allText = '';
+    let processedCount = 0;
+
+    // Update progress display for batch
+    updateProgressUI(0);
+    if (progressText) progressText.textContent = `Page 0/${totalPages}`;
+
+    try {
+        for (const pageNum of pageNumbers) {
+            // Update progress text
+            if (progressText) progressText.textContent = `Page ${processedCount + 1}/${totalPages}`;
+            if (progressBar) progressBar.style.width = `${(processedCount / totalPages) * 90}%`;
+
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 2.0 });
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            await page.render({ canvasContext: ctx, viewport }).promise;
+
+            const base64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+            const processed = await preprocessImage(base64);
+
+            const pageText = await callGeminiOCR([{
+                role: "user",
+                content: [
+                    { type: "image_url", image_url: { url: `data:image/jpeg;base64,${processed}` } },
+                    { type: "text", text: "Extract ALL text from this image exactly as it appears. The document may be in Arabic, English, or both. Output only the raw extracted text, preserving line breaks and layout. Do not add any labels, commentary, or explanation." }
+                ]
+            }]);
+
+            allText += (processedCount > 0 ? `\n\n--- Page ${pageNum} ---\n\n` : '') + pageText;
+            processedCount++;
+
+            // Set first page as source image
+            if (processedCount === 1) {
+                const fullUrl = canvas.toDataURL('image/jpeg', 0.9);
+                sourceImage.src = fullUrl;
+                if (resultSourceImage) resultSourceImage.src = fullUrl;
+            }
+        }
+
+        updateProgressUI(100);
+        filenameDisplay.textContent = `${filenameDisplay.textContent} (${totalPages} pages)`;
+
+        logEvent(analytics, 'ocr_generated', {
+            source: 'pdf_batch',
+            duration_ms: Date.now() - ocrStartedAt,
+            pages: totalPages,
+        });
+
+        // Apply text (use same tier deduction logic — deduct totalPages)
+        quill.setText(allText);
+        applyContentDirection(allText);
+        textContent.original = allText;
+        textContent.refined = '';
+
+        // Deduct pages based on tier
+        const tier = window.userTier || 'free';
+        if (tier === 'pages' && auth.currentUser) {
+            for (let i = 0; i < totalPages; i++) {
+                const remaining = await useOnePage(auth.currentUser.uid);
+                window.pagesBalance = remaining;
+                if (remaining === 0) {
+                    window.userTier = 'free';
+                    window.isProUser = false;
+                    window.isPagesUser = false;
+                    break;
+                }
+            }
+        } else if (tier === 'free' && auth.currentUser) {
+            for (let i = 0; i < totalPages; i++) {
+                if (window.freeScansLeft <= 0) break;
+                const remaining = await useOneFreeScan(auth.currentUser.uid);
+                window.freeScansLeft = remaining;
+            }
+        }
+
+        const totalWords = allText.trim().split(/\s+/).filter(w => w.length > 0).length;
+        if (statsBar) {
+            statsBar.classList.remove('hidden');
+            if (statWords) statWords.textContent = totalWords;
+        }
+
+        try {
+            saveToHistory({
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                filename: filenameDisplay.textContent || 'Batch Scan',
+                imageSrc: sourceImage.src,
+                text: allText,
+                stats: { words: totalWords, confidence: 0 }
+            });
+        } catch (e) { console.warn("History save failed:", e); }
+
+        showStep('result');
+        showToast(`Batch OCR complete — ${totalPages} pages processed`, 'success');
+        if (typeof showSmartSuggestion === 'function') {
+            showSmartSuggestion(allText);
+        }
+
+    } catch (error) {
+        console.error("Batch OCR Error:", error);
+        showToast(`Batch OCR failed: ${error.message}`, 'error', 5000);
+        showStep('upload');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DOCUMENT Q&A CHAT
+// ═══════════════════════════════════════════════════════════════════
+
+const chatBubbleBtn = document.getElementById('chat-bubble-btn');
+const chatPanel = document.getElementById('chat-panel');
+const chatCloseBtn = document.getElementById('chat-close-btn');
+const chatInput = document.getElementById('chat-input');
+const chatSendBtn = document.getElementById('chat-send-btn');
+const chatMessages = document.getElementById('chat-messages');
+
+let chatHistory = [];
+
+if (chatBubbleBtn) {
+    chatBubbleBtn.addEventListener('click', () => {
+        chatPanel.classList.toggle('show');
+        if (chatPanel.classList.contains('show')) {
+            chatInput.focus();
+        }
+    });
+}
+
+if (chatCloseBtn) {
+    chatCloseBtn.addEventListener('click', () => chatPanel.classList.remove('show'));
+}
+
+function appendChatMessage(role, text) {
+    const msg = document.createElement('div');
+    msg.className = `chat-msg ${role}`;
+    msg.innerHTML = text.replace(/\n/g, '<br>');
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendChatQuestion() {
+    const question = chatInput.value.trim();
+    if (!question) return;
+
+    const docText = textContent.original || quill.getText().trim();
+    if (!docText) {
+        showToast('No document text to query.', 'warning');
+        return;
+    }
+
+    chatInput.value = '';
+    chatSendBtn.disabled = true;
+    appendChatMessage('user', question);
+
+    // Add thinking indicator
+    const thinkingMsg = document.createElement('div');
+    thinkingMsg.className = 'chat-msg assistant';
+    thinkingMsg.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Thinking...';
+    chatMessages.appendChild(thinkingMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    chatHistory.push({ role: 'user', content: question });
+
+    try {
+        const messages = [
+            {
+                role: 'system',
+                content: `You are a document assistant. The user has scanned a document with OCR. Answer questions about the document content below. Be concise and accurate. If the document is in Arabic, respond in Arabic. If in English, respond in English.\n\n--- DOCUMENT TEXT ---\n${docText.slice(0, 8000)}\n--- END ---`
+            },
+            ...chatHistory
+        ];
+
+        const response = await fetch(GEMINI_OCR_PROXY, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages })
+        });
+
+        const result = await response.json();
+        thinkingMsg.remove();
+
+        if (result.choices?.[0]?.message?.content) {
+            const answer = stripThinkingTags(result.choices[0].message.content);
+            chatHistory.push({ role: 'assistant', content: answer });
+            appendChatMessage('assistant', answer);
+        } else {
+            appendChatMessage('assistant', 'Sorry, I couldn\'t process that question. Please try again.');
+        }
+    } catch (err) {
+        thinkingMsg.remove();
+        appendChatMessage('assistant', `Error: ${err.message}`);
+    } finally {
+        chatSendBtn.disabled = false;
+        chatInput.focus();
+    }
+}
+
+if (chatSendBtn) {
+    chatSendBtn.addEventListener('click', sendChatQuestion);
+}
+
+if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatQuestion();
+        }
+    });
+}
+
+// Show/hide chat bubble based on whether result is visible
+function updateChatBubbleVisibility() {
+    if (chatBubbleBtn) {
+        if (isResultVisible()) {
+            chatBubbleBtn.style.display = 'flex';
+        } else {
+            chatBubbleBtn.style.display = 'none';
+            if (chatPanel) chatPanel.classList.remove('show');
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AI TABLE EXTRACTION
+// ═══════════════════════════════════════════════════════════════════
+
+const btnExtractTables = document.getElementById('btn-extract-tables');
+const tabTables = document.getElementById('tab-tables');
+const tablesViewerContainer = document.getElementById('tables-viewer-container');
+const tablesContent = document.getElementById('tables-content');
+const btnCopyCsv = document.getElementById('btn-copy-csv');
+
+let extractedTablesHtml = '';
+
+if (btnExtractTables) {
+    btnExtractTables.addEventListener('click', async () => {
+        const docText = textContent.original || quill.getText().trim();
+        if (!docText || docText.length < 10) {
+            return showToast('Please extract text first.', 'warning');
+        }
+
+        // Use the source image if available for better table detection
+        const imgSrc = sourceImage?.src;
+        const hasImage = imgSrc && imgSrc.startsWith('data:');
+
+        resultLoadingOverlay.classList.remove('hidden');
+
+        try {
+            logEvent(analytics, 'ai_table_extract_start');
+
+            let result;
+            if (hasImage) {
+                const base64 = imgSrc.split(',')[1];
+                result = await callGeminiOCR([{
+                    role: "user",
+                    content: [
+                        { type: "image_url", image_url: { url: imgSrc } },
+                        { type: "text", text: "Extract ALL tables from this image. Return each table as valid HTML using <table>, <thead>, <tbody>, <tr>, <th>, <td> elements. Preserve the original language (Arabic or English). If there are no tables, respond with exactly: NO_TABLES_FOUND. Do not add any commentary or explanation outside the HTML table tags." }
+                    ]
+                }]);
+            } else {
+                result = await callGeminiOCR([{
+                    role: "user",
+                    content: [{ type: "text", text: `Extract ALL tables from the following text. Return each table as valid HTML using <table>, <thead>, <tbody>, <tr>, <th>, <td> elements. Preserve the original language. If there are no tables, respond with exactly: NO_TABLES_FOUND.\n\n${docText.slice(0, 8000)}` }]
+                }]);
+            }
+
+            resultLoadingOverlay.classList.add('hidden');
+
+            if (result.includes('NO_TABLES_FOUND') || !result.includes('<table')) {
+                showToast('No tables found in this document.', 'info');
+                return;
+            }
+
+            extractedTablesHtml = result;
+            if (tablesContent) tablesContent.innerHTML = result;
+
+            // Show and enable the tab
+            if (tabTables) {
+                tabTables.classList.remove('hidden');
+                tabTables.disabled = false;
+            }
+
+            switchTab('tables');
+            logEvent(analytics, 'ai_table_extract_complete');
+            showToast('Tables extracted successfully!', 'success');
+
+        } catch (error) {
+            resultLoadingOverlay.classList.add('hidden');
+            showToast('Table extraction failed: ' + error.message, 'error');
+        }
+    });
+}
+
+if (btnCopyCsv) {
+    btnCopyCsv.addEventListener('click', () => {
+        if (!tablesContent) return;
+        const tables = tablesContent.querySelectorAll('table');
+        if (!tables.length) {
+            showToast('No tables to copy.', 'warning');
+            return;
+        }
+
+        let csv = '';
+        tables.forEach((table, idx) => {
+            if (idx > 0) csv += '\n\n';
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                csv += Array.from(cells).map(c => `"${c.textContent.trim().replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+        });
+
+        navigator.clipboard.writeText(csv).then(() => {
+            showToast('Tables copied as CSV!', 'success');
+        });
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTO-DETECT DOCUMENT TYPE + SMART SUGGESTIONS
+// ═══════════════════════════════════════════════════════════════════
+
+const smartSuggestion = document.getElementById('smart-suggestion');
+const smartSuggestionText = document.getElementById('smart-suggestion-text');
+const smartSuggestionAction = document.getElementById('smart-suggestion-action');
+const smartSuggestionDismiss = document.getElementById('smart-suggestion-dismiss');
+
+if (smartSuggestionDismiss) {
+    smartSuggestionDismiss.addEventListener('click', () => {
+        if (smartSuggestion) smartSuggestion.classList.remove('show');
+    });
+}
+
+function detectDocumentType(text) {
+    if (!text || text.length < 20) return null;
+
+    const lower = text.toLowerCase();
+    const arabic = ARABIC_SCRIPT_PATTERN.test(text);
+
+    // Table detection
+    const hasTableKeywords = /total|المجموع|amount|المبلغ|price|السعر|qty|الكمية|invoice|فاتورة|receipt|إيصال/.test(lower);
+    const hasNumberColumns = (text.match(/\d+[\.,]\d{2}/g) || []).length >= 3;
+    const hasTabularLayout = (text.match(/\t/g) || []).length >= 4 || (text.match(/\s{3,}/g) || []).length >= 6;
+
+    if (hasTableKeywords && (hasNumberColumns || hasTabularLayout)) {
+        return { type: 'invoice', label: arabic ? 'فاتورة / جدول' : 'Invoice / Table', action: 'Extract Tables', handler: () => btnExtractTables?.click() };
+    }
+
+    // Letter/contract detection
+    const hasLetterKeywords = /dear|عزيزي|subject|الموضوع|sincerely|تحياتي|regarding|بخصوص|contract|عقد|agreement|اتفاقية/.test(lower);
+    if (hasLetterKeywords) {
+        return { type: 'letter', label: arabic ? 'خطاب / عقد' : 'Letter / Contract', action: 'AI Refine', handler: () => btnRefine?.click() };
+    }
+
+    // Handwriting detection (short text, few special chars)
+    const lineCount = text.split('\n').filter(l => l.trim()).length;
+    if (lineCount <= 10 && text.length < 500) {
+        return { type: 'handwritten', label: arabic ? 'نص مكتوب بخط اليد' : 'Handwritten Note', action: 'AI Refine', handler: () => btnRefine?.click() };
+    }
+
+    // Long document → suggest summarize
+    if (text.length > 1500) {
+        return { type: 'document', label: arabic ? 'مستند طويل' : 'Long Document', action: 'Summarize', handler: () => btnSummarize?.click() };
+    }
+
+    return null;
+}
+
+function showSmartSuggestion(text) {
+    const detection = detectDocumentType(text);
+    if (!detection || !smartSuggestion || !smartSuggestionText || !smartSuggestionAction) return;
+
+    // Detect language for badge
+    const isArabic = ARABIC_SCRIPT_PATTERN.test(text);
+    const isEnglish = /[a-zA-Z]{3,}/.test(text);
+    let langBadge = '';
+    if (isArabic && isEnglish) langBadge = '<span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-right:6px;">AR+EN</span>';
+    else if (isArabic) langBadge = '<span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-right:6px;">AR</span>';
+    else if (isEnglish) langBadge = '<span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-right:6px;">EN</span>';
+
+    smartSuggestionText.innerHTML = `${langBadge}Detected: <strong>${detection.label}</strong> — try`;
+    smartSuggestionAction.textContent = detection.action;
+    smartSuggestionAction.onclick = () => {
+        detection.handler();
+        smartSuggestion.classList.remove('show');
+    };
+    smartSuggestion.classList.add('show');
 }
 
 // Export as PDF via print
