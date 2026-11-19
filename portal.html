@@ -1158,8 +1158,8 @@
         <!-- Center: Nav links (desktop only) -->
         <nav class="hidden md:flex items-center gap-6">
             <a href="index.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium" data-i18n="nav_home">Home</a>
-            <a href="pdf-studio.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">PDF Studio</a>
-            <a href="blog.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">Blog</a>
+            <a href="pdf-studio.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium" data-i18n="nav_pdf_studio">PDF Studio</a>
+            <a href="blog.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium" data-i18n="nav_blog">Blog</a>
             <a href="contact.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium" data-i18n="nav_contact">Contact</a>
         </nav>
 
@@ -1227,7 +1227,7 @@
                     <div class="py-1">
                         <a href="subscription.html"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            <i class="fas fa-credit-card w-5 text-center mr-2"></i> Manage Subscription
+                            <i class="fas fa-credit-card w-5 text-center mr-2"></i> <span data-i18n="side_manage">Manage Subscription</span>
                         </a>
                     </div>
                     <div class="border-t border-gray-100 my-1"></div>
@@ -1243,11 +1243,11 @@
 
     <!-- ===== UPSELL BANNER (shown to repeat page-pack buyers) ===== -->
     <div id="upsell-banner" class="hidden items-center justify-between gap-3 px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-300 text-gray-900 text-sm font-medium flex-shrink-0" style="z-index:25;">
-        <span id="upsell-banner-text">
+        <span id="upsell-banner-text" data-i18n="upsell_text">
             You've bought multiple page packs — a Pro subscription gives unlimited scans for less.
         </span>
         <div class="flex items-center gap-2 flex-shrink-0">
-            <a id="upsell-banner-cta" href="pricing.html" class="bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-700 transition whitespace-nowrap">
+            <a id="upsell-banner-cta" href="pricing.html" class="bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-700 transition whitespace-nowrap" data-i18n="upsell_cta">
                 Upgrade to Pro
             </a>
             <button id="upsell-banner-dismiss" class="text-gray-700 hover:text-gray-900 text-lg leading-none" aria-label="Dismiss">&times;</button>
@@ -1271,32 +1271,38 @@
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
-                <a href="#" id="link-new-scan" class="sidebar-nav-item active">
-                    <i class="fas fa-magic"></i>
-                    <span data-i18n="side_new">New Scan</span>
-                </a>
+            <nav class="flex-1 p-3 overflow-y-auto">
+                <!-- Main Tools -->
+                <div class="mb-4">
+                    <p class="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500" data-i18n="side_section_tools">Tools</p>
+                    <a href="#" id="link-new-scan" class="sidebar-nav-item active">
+                        <i class="fas fa-magic w-5 text-center"></i>
+                        <span data-i18n="side_new">New Scan</span>
+                    </a>
+                    <a href="#" id="link-history" class="sidebar-nav-item">
+                        <i class="fas fa-clock-rotate-left w-5 text-center"></i>
+                        <span data-i18n="side_history">History</span>
+                    </a>
+                    <a href="pdf-studio.html" class="sidebar-nav-item">
+                        <i class="fas fa-file-pdf w-5 text-center"></i>
+                        <span data-i18n="side_pdf_studio">PDF Studio</span>
+                    </a>
+                </div>
 
+                <!-- Account -->
+                <div class="mb-4">
+                    <p class="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500" data-i18n="side_section_account">Account</p>
+                    <a href="subscription.html" id="manage-sub-link-sidebar" class="sidebar-nav-item">
+                        <i class="fas fa-credit-card w-5 text-center"></i>
+                        <span data-i18n="side_manage">Manage Subscription</span>
+                    </a>
+                </div>
 
-                <a href="#" id="link-history" class="sidebar-nav-item">
-                    <i class="fas fa-history"></i>
-                    <span data-i18n="side_history">History</span>
-                </a>
-
-                <a href="pdf-studio.html" class="sidebar-nav-item">
-                    <i class="fas fa-file-pdf"></i>
-                    <span>PDF Studio</span>
-                </a>
-
-                <a href="subscription.html" id="manage-sub-link-sidebar" class="sidebar-nav-item">
-                    <i class="fas fa-credit-card"></i>
-                    <span data-i18n="side_manage">Manage Subscription</span>
-                </a>
-
-                <div class="pt-2">
+                <!-- Buy Credits CTA -->
+                <div class="mt-auto pt-2">
                     <a href="pricing.html" class="sidebar-credits-btn">
                         <i class="fas fa-coins"></i>
-                        <span>Buy OCR Credits</span>
+                        <span data-i18n="side_buy_credits">Buy OCR Credits</span>
                     </a>
                 </div>
             </nav>
@@ -1941,7 +1947,16 @@
                 modal_trans_title: "Select Target Language",
                 modal_trans_label: "Language",
                 modal_trans_cancel: "Cancel",
-                modal_trans_confirm: "Translate"
+                modal_trans_confirm: "Translate",
+
+                nav_pdf_studio: "PDF Studio",
+                nav_blog: "Blog",
+                side_pdf_studio: "PDF Studio",
+                side_buy_credits: "Buy OCR Credits",
+                side_section_tools: "Tools",
+                side_section_account: "Account",
+                upsell_text: "You've bought multiple page packs — a Pro subscription gives unlimited scans for less.",
+                upsell_cta: "Upgrade to Pro"
             },
             ar: {
                 app_title: "الماسح الضوئي العربي",
@@ -2007,7 +2022,16 @@
                 modal_trans_title: "اختر لغة الهدف",
                 modal_trans_label: "اللغة",
                 modal_trans_cancel: "إلغاء",
-                modal_trans_confirm: "ترجمة"
+                modal_trans_confirm: "ترجمة",
+
+                nav_pdf_studio: "استوديو PDF",
+                nav_blog: "المدونة",
+                side_pdf_studio: "استوديو PDF",
+                side_buy_credits: "شراء رصيد مسح",
+                side_section_tools: "الأدوات",
+                side_section_account: "الحساب",
+                upsell_text: "اشتريت عدة حزم صفحات — اشتراك Pro يمنحك مسح غير محدود بأقل.",
+                upsell_cta: "ترقية إلى Pro"
             }
         };
 
