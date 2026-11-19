@@ -341,7 +341,7 @@ async function handleFile(file) {
             showPdfSelectionModal(file);
         } catch (error) {
             console.error(error);
-            alert("Error processing PDF: " + error.message);
+            showToast("Error processing PDF: " + error.message, 'error');
             showStep('upload');
         }
     } else if (file.type.startsWith('image/')) {
@@ -356,7 +356,7 @@ async function handleFile(file) {
         };
         reader.readAsDataURL(file);
     } else {
-        alert("Unsupported file type. Please upload Image or PDF.");
+        showToast("Unsupported file type. Please upload Image or PDF.", 'warning');
     }
 }
 
@@ -522,7 +522,7 @@ async function selectPdfPage(pdfDoc, pageNum) {
         processOCR(base64Image, true);
     } catch (error) {
         console.error("Selection error:", error);
-        alert("Error extracting page: " + error.message);
+        showToast("Error extracting page: " + error.message, 'error');
         showStep('upload');
     }
 }
@@ -621,7 +621,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         if (statusDisplay) statusDisplay.textContent = `Free · ${remaining}/10 scans`;
 
                         if (remaining === 0) {
-                            setTimeout(() => alert('That was your last free scan this month. Upgrade or come back next month!'), 500);
+                            setTimeout(() => showToast('That was your last free scan this month. Upgrade or come back next month!', 'warning', 5000), 500);
                         }
                     }
                 }
@@ -650,7 +650,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         localStorage.setItem('isPro', 'false');
                         // Fall back to free tier
                         window.freeScansLeft = await getFreeScansRemaining(auth.currentUser.uid);
-                        setTimeout(() => alert('You\'ve used all your purchased pages. You now have ' + window.freeScansLeft + ' free scans left this month.'), 500);
+                        setTimeout(() => showToast('You\'ve used all your purchased pages. You now have ' + window.freeScansLeft + ' free scans left this month.', 'warning', 5000), 500);
                     }
                 }
 
@@ -690,7 +690,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
         }
     } catch (error) {
         console.error("OCR Error", error);
-        alert(`Error: ${error.message || "Unknown error occurred"}`);
+        showToast(`Error: ${error.message || "Unknown error occurred"}`, 'error', 5000);
         showStep('upload');
         clearInterval(progressInterval);
     }
@@ -808,7 +808,7 @@ if (btnDownload) {
     btnDownload.addEventListener('click', () => {
         const textToSave = quill.getText();
         if (!textToSave || textToSave.trim().length === 0) {
-            alert("No text to download.");
+            showToast("No text to download.", 'warning');
             return;
         }
         logEvent(analytics, 'result_download');
@@ -829,7 +829,7 @@ if (btnPrint) {
     btnPrint.addEventListener('click', () => {
         const textToPrint = quill.root.innerHTML;
         if (!quill.getText().trim().length) {
-            alert("No text to print.");
+            showToast("No text to print.", 'warning');
             return;
         }
 
@@ -943,7 +943,7 @@ if (btnSubscribe) {
             await checkout(selectedPlan);
         } catch (err) {
             console.error("Checkout failed:", err);
-            alert("Checkout Error: " + err.message);
+            showToast("Checkout Error: " + err.message, 'error');
         }
     });
 }
@@ -1180,7 +1180,7 @@ Formatting rules:
 if (btnRefine) {
     btnRefine.addEventListener('click', async () => {
         const textToRefine = textContent.original || quill.getText().trim();
-        if (!textToRefine || textToRefine.length < 10) return alert("Please extract text first.");
+        if (!textToRefine || textToRefine.length < 10) return showToast("Please extract text first.", 'warning');
 
         logEvent(analytics, 'ai_refine_start');
 
@@ -1207,7 +1207,7 @@ if (btnRefine) {
 
         } catch (error) {
             console.error("Refine error:", error);
-            alert("AI Refine failed: " + error.message);
+            showToast("AI Refine failed: " + error.message, 'error');
         } finally {
             btnRefine.innerHTML = originalLabel;
             btnRefine.disabled = false;
@@ -1250,7 +1250,7 @@ btnSummarize.addEventListener('click', async () => {
     if (!textContent.original && quill.getText().trim().length > 0) textContent.original = quill.getText();
     const textToProcess = textContent.original || quill.getText();
 
-    if (!textToProcess || textToProcess.length < 10) return alert("Please extract text first.");
+    if (!textToProcess || textToProcess.length < 10) return showToast("Please extract text first.", 'warning');
 
     const originalLabel = btnSummarize.innerHTML;
     btnSummarize.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Summarizing...';
@@ -1275,7 +1275,7 @@ btnSummarize.addEventListener('click', async () => {
 
     } catch (error) {
         console.error(error);
-        alert("Summarization failed: " + error.message);
+        showToast("Summarization failed: " + error.message, 'error');
     } finally {
         btnSummarize.innerHTML = originalLabel;
         btnSummarize.disabled = false;
@@ -1291,7 +1291,7 @@ if (btnTranslate) {
         if (!textContent.original && quill.getText().trim().length > 0) textContent.original = quill.getText();
         const textToProcess = textContent.original || quill.getText();
 
-        if (!textToProcess || textToProcess.length < 10) return alert("Please extract text first.");
+        if (!textToProcess || textToProcess.length < 10) return showToast("Please extract text first.", 'warning');
 
         // Open Modal
         if (translationModal) translationModal.classList.remove('hidden');
@@ -1339,7 +1339,7 @@ async function performTranslation(targetLang) {
 
     } catch (error) {
         console.error(error);
-        alert("Translation failed: " + error.message);
+        showToast("Translation failed: " + error.message, 'error');
     } finally {
         btnTranslate.innerHTML = originalLabel;
         btnTranslate.disabled = false;
@@ -1493,3 +1493,426 @@ window.deleteHistoryItem = function (id) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
     renderHistory();
 };
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST NOTIFICATION SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+
+const TOAST_ICONS = {
+    success: 'fa-check-circle',
+    error: 'fa-exclamation-circle',
+    info: 'fa-info-circle',
+    warning: 'fa-exclamation-triangle',
+};
+
+function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<i class="fas ${TOAST_ICONS[type] || TOAST_ICONS.info}"></i><span>${message}</span>`;
+    toast.addEventListener('click', () => dismissToast(toast));
+
+    container.appendChild(toast);
+    // Trigger reflow then animate in
+    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
+
+    if (duration > 0) {
+        setTimeout(() => dismissToast(toast), duration);
+    }
+    return toast;
+}
+
+function dismissToast(toast) {
+    if (!toast || !toast.parentNode) return;
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 350);
+}
+
+// Make globally available
+window.showToast = showToast;
+
+// ═══════════════════════════════════════════════════════════════════
+// CLIPBOARD PASTE-TO-SCAN
+// ═══════════════════════════════════════════════════════════════════
+
+document.addEventListener('paste', (e) => {
+    // Only handle paste when on the upload step (not inside the Quill editor)
+    if (document.activeElement && document.activeElement.closest('.ql-editor')) return;
+    if (stepResult && !stepResult.classList.contains('hidden') && document.activeElement?.closest('#editor-container')) return;
+
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of items) {
+        if (item.type.startsWith('image/')) {
+            e.preventDefault();
+            const file = item.getAsFile();
+            if (file) {
+                showToast('Image pasted — scanning...', 'info', 2000);
+                handleFile(file);
+            }
+            return;
+        }
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════════
+
+const shortcutsModal = document.getElementById('shortcuts-modal');
+const closeShortcutsBtn = document.getElementById('close-shortcuts-modal');
+
+if (closeShortcutsBtn) {
+    closeShortcutsBtn.addEventListener('click', () => shortcutsModal.classList.add('hidden'));
+}
+if (shortcutsModal) {
+    shortcutsModal.addEventListener('click', (e) => {
+        if (e.target === shortcutsModal) shortcutsModal.classList.add('hidden');
+    });
+}
+
+function isResultVisible() {
+    return stepResult && !stepResult.classList.contains('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+    const mod = e.ctrlKey || e.metaKey;
+    const shift = e.shiftKey;
+    const tag = document.activeElement?.tagName;
+    const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+    // ? — Show shortcuts help (only when not typing in an input)
+    if (e.key === '?' && !inInput && !mod) {
+        e.preventDefault();
+        if (shortcutsModal) shortcutsModal.classList.toggle('hidden');
+        return;
+    }
+
+    // Escape — close modals or go back
+    if (e.key === 'Escape') {
+        if (shortcutsModal && !shortcutsModal.classList.contains('hidden')) {
+            shortcutsModal.classList.add('hidden');
+            return;
+        }
+        if (exportDropdown && exportDropdown.classList.contains('show')) {
+            exportDropdown.classList.remove('show');
+            return;
+        }
+        if (isResultVisible() && btnBack) {
+            btnBack.click();
+            return;
+        }
+    }
+
+    if (!mod) return;
+
+    // Ctrl+S — Download/export
+    if (e.key === 's' && !shift && isResultVisible()) {
+        e.preventDefault();
+        toggleExportDropdown();
+        return;
+    }
+
+    // Ctrl+Shift+C — Copy result
+    if (e.key === 'C' && shift && isResultVisible()) {
+        e.preventDefault();
+        if (btnCopy) btnCopy.click();
+        return;
+    }
+
+    // Ctrl+Shift+R — AI Refine
+    if (e.key === 'R' && shift && isResultVisible()) {
+        e.preventDefault();
+        if (btnRefine) btnRefine.click();
+        return;
+    }
+
+    // Ctrl+Shift+S — Summarize
+    if (e.key === 'S' && shift && isResultVisible()) {
+        e.preventDefault();
+        if (btnSummarize) btnSummarize.click();
+        return;
+    }
+
+    // Ctrl+Shift+T — Translate
+    if (e.key === 'T' && shift && isResultVisible()) {
+        e.preventDefault();
+        if (btnTranslate) btnTranslate.click();
+        return;
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// RICH EXPORT FORMATS (TXT, Markdown, DOCX, PDF)
+// ═══════════════════════════════════════════════════════════════════
+
+const exportDropdown = document.getElementById('export-dropdown');
+
+function toggleExportDropdown() {
+    if (!exportDropdown) return;
+    exportDropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (exportDropdown && !e.target.closest('#btn-download') && !e.target.closest('#export-dropdown')) {
+        exportDropdown.classList.remove('show');
+    }
+});
+
+// Override the download button to toggle dropdown instead of direct download
+if (btnDownload) {
+    // Remove existing listeners by replacing the node
+    const newDownloadBtn = btnDownload.cloneNode(true);
+    btnDownload.parentNode.replaceChild(newDownloadBtn, btnDownload);
+    newDownloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleExportDropdown();
+    });
+}
+
+// Handle export format selection
+if (exportDropdown) {
+    exportDropdown.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-format]');
+        if (!btn) return;
+
+        const format = btn.dataset.format;
+        const text = quill.getText().trim();
+        const html = quill.root.innerHTML;
+        const filename = (filenameDisplay?.textContent || 'result').replace(/\.[^.]+$/, '');
+
+        if (!text) {
+            showToast('No text to export.', 'warning');
+            exportDropdown.classList.remove('show');
+            return;
+        }
+
+        logEvent(analytics, 'result_download', { format });
+        exportDropdown.classList.remove('show');
+
+        try {
+            switch (format) {
+                case 'txt':
+                    downloadBlob(new Blob([text], { type: 'text/plain' }), `${filename}.txt`);
+                    showToast('Downloaded as TXT', 'success');
+                    break;
+
+                case 'md':
+                    const md = htmlToMarkdown(html);
+                    downloadBlob(new Blob([md], { type: 'text/markdown' }), `${filename}.md`);
+                    showToast('Downloaded as Markdown', 'success');
+                    break;
+
+                case 'docx':
+                    await exportAsDocx(html, text, filename);
+                    break;
+
+                case 'pdf':
+                    exportAsPdf(html, filename);
+                    break;
+            }
+        } catch (err) {
+            showToast(`Export failed: ${err.message}`, 'error');
+        }
+    });
+}
+
+function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// HTML → Markdown converter
+function htmlToMarkdown(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+
+    function convert(node) {
+        if (node.nodeType === Node.TEXT_NODE) return node.textContent;
+        if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+        const children = Array.from(node.childNodes).map(convert).join('');
+        const tag = node.tagName.toLowerCase();
+
+        switch (tag) {
+            case 'h1': return `# ${children.trim()}\n\n`;
+            case 'h2': return `## ${children.trim()}\n\n`;
+            case 'h3': return `### ${children.trim()}\n\n`;
+            case 'p': return `${children.trim()}\n\n`;
+            case 'br': return '\n';
+            case 'strong': case 'b': return `**${children}**`;
+            case 'em': case 'i': return `*${children}*`;
+            case 'u': return children;
+            case 'li': return `- ${children.trim()}\n`;
+            case 'ul': case 'ol': return `${children}\n`;
+            case 'div': return `${children}\n`;
+            default: return children;
+        }
+    }
+
+    return convert(div).replace(/\n{3,}/g, '\n\n').trim();
+}
+
+// Export as DOCX using docx library (lazy-loaded)
+async function exportAsDocx(html, plainText, filename) {
+    showToast('Generating DOCX...', 'info', 2000);
+
+    // Lazy-load docx library
+    if (!window.docx) {
+        await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.js';
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Failed to load DOCX library'));
+            document.head.appendChild(script);
+        });
+    }
+
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = window.docx;
+
+    // Parse HTML into docx paragraphs
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const paragraphs = [];
+
+    const isArabic = ARABIC_SCRIPT_PATTERN.test(plainText);
+
+    function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent;
+            if (text.trim()) {
+                paragraphs.push(new Paragraph({
+                    children: [new TextRun({ text, rightToLeft: isArabic, size: 24 })],
+                    bidirectional: isArabic,
+                    alignment: isArabic ? AlignmentType.RIGHT : AlignmentType.LEFT,
+                }));
+            }
+            return;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+        const tag = node.tagName.toLowerCase();
+        const text = node.textContent.trim();
+        if (!text) return;
+
+        if (tag === 'h1') {
+            paragraphs.push(new Paragraph({
+                children: [new TextRun({ text, bold: true, rightToLeft: isArabic, size: 32 })],
+                heading: HeadingLevel.HEADING_1,
+                bidirectional: isArabic,
+            }));
+        } else if (tag === 'h2') {
+            paragraphs.push(new Paragraph({
+                children: [new TextRun({ text, bold: true, rightToLeft: isArabic, size: 28 })],
+                heading: HeadingLevel.HEADING_2,
+                bidirectional: isArabic,
+            }));
+        } else if (tag === 'h3') {
+            paragraphs.push(new Paragraph({
+                children: [new TextRun({ text, bold: true, rightToLeft: isArabic, size: 24 })],
+                heading: HeadingLevel.HEADING_3,
+                bidirectional: isArabic,
+            }));
+        } else if (tag === 'ul' || tag === 'ol') {
+            Array.from(node.children).forEach(li => {
+                paragraphs.push(new Paragraph({
+                    children: [new TextRun({ text: `• ${li.textContent.trim()}`, rightToLeft: isArabic, size: 24 })],
+                    bidirectional: isArabic,
+                }));
+            });
+        } else if (tag === 'p' || tag === 'div') {
+            const runs = [];
+            node.childNodes.forEach(child => {
+                if (child.nodeType === Node.TEXT_NODE) {
+                    if (child.textContent.trim()) {
+                        runs.push(new TextRun({ text: child.textContent, rightToLeft: isArabic, size: 24 }));
+                    }
+                } else if (child.nodeType === Node.ELEMENT_NODE) {
+                    const childTag = child.tagName.toLowerCase();
+                    const childText = child.textContent;
+                    if (childText.trim()) {
+                        runs.push(new TextRun({
+                            text: childText,
+                            bold: childTag === 'strong' || childTag === 'b',
+                            italics: childTag === 'em' || childTag === 'i',
+                            rightToLeft: isArabic,
+                            size: 24,
+                        }));
+                    }
+                }
+            });
+            if (runs.length) {
+                paragraphs.push(new Paragraph({
+                    children: runs,
+                    bidirectional: isArabic,
+                    alignment: isArabic ? AlignmentType.RIGHT : AlignmentType.LEFT,
+                }));
+            }
+        } else {
+            Array.from(node.childNodes).forEach(processNode);
+        }
+    }
+
+    Array.from(div.childNodes).forEach(processNode);
+
+    if (!paragraphs.length) {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: plainText, rightToLeft: isArabic, size: 24 })],
+            bidirectional: isArabic,
+        }));
+    }
+
+    const doc = new Document({
+        sections: [{ properties: {}, children: paragraphs }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    downloadBlob(blob, `${filename}.docx`);
+    showToast('Downloaded as DOCX', 'success');
+}
+
+// Export as PDF via print
+function exportAsPdf(html, filename) {
+    const isArabic = ARABIC_SCRIPT_PATTERN.test(quill.getText());
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>${filename}</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Amiri&family=Inter:wght@400;700&display=swap');
+                    body {
+                        font-family: ${isArabic ? "'Amiri', serif" : "'Inter', sans-serif"};
+                        padding: 40px;
+                        line-height: 1.8;
+                        direction: ${isArabic ? 'rtl' : 'ltr'};
+                        color: #1e293b;
+                    }
+                    h1 { font-size: 1.6rem; font-weight: 800; margin: 1.2rem 0 0.6rem; border-bottom: 2px solid #2563eb; padding-bottom: 0.4rem; }
+                    h2 { font-size: 1.2rem; font-weight: 700; color: #1e3a8a; margin: 1rem 0 0.4rem; }
+                    h3 { font-size: 1rem; font-weight: 600; color: #1d4ed8; margin: 0.8rem 0 0.3rem; }
+                    p { margin: 0.5rem 0; }
+                    li { margin: 0.3rem 0; }
+                    strong { font-weight: 700; }
+                </style>
+            </head>
+            <body>${html}</body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+        printWindow.print();
+        showToast('PDF print dialog opened', 'success');
+    }, 500);
+}

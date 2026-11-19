@@ -531,6 +531,139 @@
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
+        /* ===== TOAST NOTIFICATIONS ===== */
+        #toast-container {
+            position: fixed;
+            top: 70px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            backdrop-filter: blur(12px);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.21,1.02,0.73,1), opacity 0.35s ease;
+            max-width: 360px;
+            cursor: pointer;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.toast-success {
+            background: rgba(240,253,244,0.95);
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .toast.toast-error {
+            background: rgba(254,242,242,0.95);
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .toast.toast-info {
+            background: rgba(239,246,255,0.95);
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        .toast.toast-warning {
+            background: rgba(255,251,235,0.95);
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        body.dark-mode .toast.toast-success { background: rgba(20,83,45,0.92); border-color: #166534; color: #bbf7d0; }
+        body.dark-mode .toast.toast-error   { background: rgba(127,29,29,0.92); border-color: #991b1b; color: #fecaca; }
+        body.dark-mode .toast.toast-info    { background: rgba(30,58,138,0.92); border-color: #1e40af; color: #bfdbfe; }
+        body.dark-mode .toast.toast-warning { background: rgba(120,53,15,0.92); border-color: #92400e; color: #fde68a; }
+
+        .toast i { font-size: 16px; flex-shrink: 0; }
+
+        /* ===== EXPORT DROPDOWN ===== */
+        #export-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+            padding: 4px;
+            min-width: 180px;
+            z-index: 50;
+            display: none;
+        }
+
+        #export-dropdown.show { display: block; }
+
+        #export-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        #export-dropdown button:hover { background: #f1f5f9; }
+        #export-dropdown button i { width: 18px; text-align: center; color: #6b7280; }
+
+        body.dark-mode #export-dropdown {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        body.dark-mode #export-dropdown button { color: #e2e8f0; }
+        body.dark-mode #export-dropdown button:hover { background: #334155; }
+
+        /* ===== KEYBOARD SHORTCUTS MODAL ===== */
+        .shortcut-key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            padding: 2px 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 11px;
+            font-family: 'SF Mono', ui-monospace, monospace;
+            font-weight: 600;
+            color: #475569;
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+
+        body.dark-mode .shortcut-key {
+            background: #334155;
+            border-color: #475569;
+            color: #cbd5e1;
+            box-shadow: 0 1px 0 #1e293b;
+        }
     </style>
 </head>
 
@@ -872,11 +1005,19 @@
                                     title="Copy Text">
                                     <i class="fas fa-copy text-sm"></i>
                                 </button>
-                                <button id="btn-download"
-                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
-                                    title="Download">
-                                    <i class="fas fa-download text-sm"></i>
-                                </button>
+                                <div class="relative">
+                                    <button id="btn-download"
+                                        class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                        title="Download">
+                                        <i class="fas fa-download text-sm"></i>
+                                    </button>
+                                    <div id="export-dropdown">
+                                        <button data-format="txt"><i class="fas fa-file-alt"></i> Plain Text (.txt)</button>
+                                        <button data-format="md"><i class="fab fa-markdown"></i> Markdown (.md)</button>
+                                        <button data-format="docx"><i class="fas fa-file-word"></i> Word (.docx)</button>
+                                        <button data-format="pdf"><i class="fas fa-file-pdf"></i> PDF (.pdf)</button>
+                                    </div>
+                                </div>
                                 <button id="btn-print"
                                     class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
                                     title="Print">
@@ -1521,6 +1662,59 @@
             }
         });
     </script>
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container"></div>
+
+    <!-- ===== KEYBOARD SHORTCUTS MODAL ===== -->
+    <div id="shortcuts-modal" class="fixed inset-0 bg-black/50 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button id="close-shortcuts-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-keyboard text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Keyboard Shortcuts</h3>
+            </div>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Paste image to scan</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">V</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Download / Export</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">S</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Copy result</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">Shift</span><span class="shortcut-key">C</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">AI Refine</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">Shift</span><span class="shortcut-key">R</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Summarize</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">Shift</span><span class="shortcut-key">S</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Translate</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">Shift</span><span class="shortcut-key">T</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Back to upload</span>
+                    <div class="flex gap-1"><span class="shortcut-key">Esc</span></div>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                    <span class="text-gray-600">Show this help</span>
+                    <div class="flex gap-1"><span class="shortcut-key">?</span></div>
+                </div>
+            </div>
+            <p class="text-xs text-gray-400 mt-4 text-center">Use <span class="shortcut-key" style="font-size:10px;">&#8984;</span> instead of Ctrl on Mac</p>
+        </div>
+    </div>
+
     <script src="./web-widget/agent-widget.js" defer></script>
 
 </body>
