@@ -782,6 +782,8 @@ if (btnBack) {
         if (typeof chatHistory !== 'undefined') chatHistory.length = 0;
         const chatMessages = document.getElementById('chat-messages');
         if (chatMessages) chatMessages.innerHTML = '';
+        // Disable split view if active
+        if (typeof disableSplitView === 'function' && splitViewActive) disableSplitView();
         showStep('upload');
     });
 }
@@ -795,8 +797,10 @@ if (btnNewScan) {
         hideResultTabs();
         // Reset chat state
         if (typeof chatHistory !== 'undefined') chatHistory.length = 0;
-        const chatMessages = document.getElementById('chat-messages');
-        if (chatMessages) chatMessages.innerHTML = '';
+        const chatMessages2 = document.getElementById('chat-messages');
+        if (chatMessages2) chatMessages2.innerHTML = '';
+        // Disable split view if active
+        if (typeof disableSplitView === 'function' && splitViewActive) disableSplitView();
         showStep('upload');
     });
 }
@@ -1248,7 +1252,9 @@ if (btnRefine) {
 
         try {
             const isArabic = ARABIC_SCRIPT_PATTERN.test(textToRefine);
-            const systemPrompt = isArabic ? REFINE_SYSTEM_PROMPT_AR : REFINE_SYSTEM_PROMPT_EN;
+            const systemPrompt = (typeof window._getRefinePrompt === 'function')
+                ? window._getRefinePrompt(isArabic)
+                : (isArabic ? REFINE_SYSTEM_PROMPT_AR : REFINE_SYSTEM_PROMPT_EN);
             const refined = await callGemini([
                 { role: "system", content: systemPrompt },
                 { role: "user", content: textToRefine.slice(0, 6000) }
@@ -2433,3 +2439,332 @@ function exportAsPdf(html, filename) {
         showToast('PDF print dialog opened', 'success');
     }, 500);
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// PHASE 3.1: SIDE-BY-SIDE SPLIT VIEW
+// ═══════════════════════════════════════════════════════════════════
+
+const btnSplitView = document.getElementById('btn-split-view');
+let splitViewActive = false;
+
+function enableSplitView() {
+    const editorWrapper = document.querySelector('#step-result .relative.flex-1.flex.flex-col.overflow-hidden');
+    if (!editorWrapper || splitViewActive) return;
+
+    splitViewActive = true;
+    btnSplitView.classList.add('bg-blue-100', 'text-blue-700');
+    btnSplitView.title = 'Exit Split View';
+
+    // Store original classes
+    editorWrapper.dataset.originalClass = editorWrapper.className;
+
+    // Create split layout
+    editorWrapper.className = 'split-view-container';
+
+    // Image pane
+    const imagePane = document.createElement('div');
+    imagePane.className = 'split-pane-image';
+    imagePane.id = 'split-image-pane';
+    const img = document.createElement('img');
+    img.src = sourceImage.src;
+    img.alt = 'Source document';
+    imagePane.appendChild(img);
+
+    // Draggable divider
+    const divider = document.createElement('div');
+    divider.className = 'split-divider';
+    divider.id = 'split-divider';
+
+    // Editor pane — wraps existing children
+    const editorPane = document.createElement('div');
+    editorPane.className = 'split-pane-editor';
+    editorPane.id = 'split-editor-pane';
+
+    // Move existing children into editor pane
+    while (editorWrapper.firstChild) {
+        editorPane.appendChild(editorWrapper.firstChild);
+    }
+
+    editorWrapper.appendChild(imagePane);
+    editorWrapper.appendChild(divider);
+    editorWrapper.appendChild(editorPane);
+
+    // Hide the Image Viewer tab (redundant in split view)
+    if (tabImageViewer) tabImageViewer.classList.add('opacity-50');
+
+    // If currently on image tab, switch to original
+    const activeTabEl = document.querySelector('.result-tab.active-tab');
+    if (activeTabEl && activeTabEl.id === 'tab-image-viewer') {
+        switchTab('original');
+    }
+
+    // Draggable divider logic
+    let isDragging = false;
+    const onMouseDown = (e) => {
+        isDragging = true;
+        divider.classList.add('active');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+    };
+    const onMouseMove = (e) => {
+        if (!isDragging) return;
+        const rect = editorWrapper.getBoundingClientRect();
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+            const pct = ((e.clientY - rect.top) / rect.height) * 100;
+            imagePane.style.flex = `0 0 ${Math.max(20, Math.min(80, pct))}%`;
+        } else {
+            const pct = ((e.clientX - rect.left) / rect.width) * 100;
+            imagePane.style.flex = `0 0 ${Math.max(20, Math.min(80, pct))}%`;
+        }
+    };
+    const onMouseUp = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        divider.classList.remove('active');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+    };
+
+    divider.addEventListener('mousedown', onMouseDown);
+    divider.addEventListener('touchstart', (e) => { onMouseDown(e.touches[0]); });
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('touchmove', (e) => { onMouseMove(e.touches[0]); });
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('touchend', onMouseUp);
+
+    // Store cleanup references
+    editorWrapper._splitCleanup = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('touchmove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('touchend', onMouseUp);
+    };
+}
+
+function disableSplitView() {
+    const editorWrapper = document.querySelector('.split-view-container');
+    if (!editorWrapper || !splitViewActive) return;
+
+    splitViewActive = false;
+    btnSplitView.classList.remove('bg-blue-100', 'text-blue-700');
+    btnSplitView.title = 'Toggle Split View';
+
+    // Clean up event listeners
+    if (editorWrapper._splitCleanup) editorWrapper._splitCleanup();
+
+    // Move editor pane children back
+    const editorPane = document.getElementById('split-editor-pane');
+    const imagePane = document.getElementById('split-image-pane');
+    const dividerEl = document.getElementById('split-divider');
+
+    if (editorPane) {
+        while (editorPane.firstChild) {
+            editorWrapper.appendChild(editorPane.firstChild);
+        }
+    }
+
+    // Remove split elements
+    if (imagePane) imagePane.remove();
+    if (dividerEl) dividerEl.remove();
+    if (editorPane) editorPane.remove();
+
+    // Restore original classes
+    editorWrapper.className = editorWrapper.dataset.originalClass || 'relative flex-1 flex flex-col overflow-hidden';
+
+    // Restore Image Viewer tab
+    if (tabImageViewer) tabImageViewer.classList.remove('opacity-50');
+}
+
+if (btnSplitView) {
+    btnSplitView.addEventListener('click', () => {
+        if (!sourceImage.src) return showToast('No image to display', 'warning');
+        if (splitViewActive) {
+            disableSplitView();
+        } else {
+            enableSplitView();
+        }
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PHASE 3.2: AI PROMPT TEMPLATE SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+
+const TEMPLATE_STORAGE_KEY = 'ocrActiveTemplate';
+const CUSTOM_PROMPT_KEY = 'ocrCustomTemplate';
+
+const TEMPLATE_PROMPTS = {
+    none: null, // Uses default refine prompt
+    legal: {
+        en: `You are a legal document specialist formatting OCR-extracted legal text.
+
+Formatting rules:
+- Use HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br>
+- Identify and bold all party names, dates, case numbers, and legal references
+- Use numbered lists (<ol>) for clauses and articles
+- Clearly separate preamble, body, and signature sections with headings
+- Preserve legal terminology exactly — do not paraphrase
+- Format monetary amounts and dates consistently
+- Return only HTML, no commentary`,
+        ar: `أنت متخصص في تنسيق المستندات القانونية المستخرجة بتقنية OCR.
+
+قواعد التنسيق:
+- استخدم HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br>
+- حدد وعرّض بالخط العريض جميع أسماء الأطراف والتواريخ وأرقام القضايا والمراجع القانونية
+- استخدم القوائم المرقمة (<ol>) للبنود والمواد
+- افصل بوضوح بين الديباجة والمتن وقسم التوقيعات بعناوين
+- حافظ على المصطلحات القانونية كما هي دون إعادة صياغة
+- نسّق المبالغ المالية والتواريخ بشكل موحد
+- أعد HTML فقط، بدون تعليقات`
+    },
+    academic: {
+        en: `You are an academic paper formatting specialist for OCR-extracted scholarly text.
+
+Formatting rules:
+- Use HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br> <blockquote>
+- Main paper title → <h1>, section headings (Abstract, Introduction, etc.) → <h2>
+- Use <blockquote> for quoted passages or citations
+- Bold author names, journal titles, and key terms
+- Use numbered references where detected
+- Format mathematical expressions and figures references clearly
+- Preserve all citation numbers [1], [2] etc.
+- Return only HTML, no commentary`,
+        ar: `أنت متخصص في تنسيق الأوراق الأكاديمية المستخرجة بتقنية OCR.
+
+قواعد التنسيق:
+- استخدم HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br> <blockquote>
+- عنوان البحث → <h1>، عناوين الأقسام (الملخص، المقدمة، إلخ) → <h2>
+- استخدم <blockquote> للاقتباسات
+- عرّض بالخط العريض أسماء المؤلفين والمجلات والمصطلحات الرئيسية
+- حافظ على أرقام المراجع [1]، [2] إلخ
+- أعد HTML فقط، بدون تعليقات`
+    },
+    invoice: {
+        en: `You are an invoice/receipt formatting specialist for OCR-extracted financial documents.
+
+Formatting rules:
+- Use HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br> <table> <tr> <td> <th>
+- Format as a structured invoice: header info, line items, totals
+- Use <table> for line items with columns: Description, Qty, Unit Price, Total
+- Bold the company name, invoice number, date, and total amount
+- Clearly separate: Vendor info, Bill-to, Line items, Subtotal/Tax/Total
+- Format currency consistently (keep original currency symbol)
+- Return only HTML, no commentary`,
+        ar: `أنت متخصص في تنسيق الفواتير والإيصالات المستخرجة بتقنية OCR.
+
+قواعد التنسيق:
+- استخدم HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br> <table> <tr> <td> <th>
+- نسّق كفاتورة منظمة: معلومات الرأس، البنود، الإجماليات
+- استخدم <table> لبنود الفاتورة مع أعمدة: الوصف، الكمية، سعر الوحدة، الإجمالي
+- عرّض اسم الشركة ورقم الفاتورة والتاريخ والمبلغ الإجمالي بالخط العريض
+- افصل بوضوح: معلومات البائع، العميل، البنود، المجموع/الضريبة/الإجمالي
+- أعد HTML فقط، بدون تعليقات`
+    },
+    handwritten: {
+        en: `You are a handwriting OCR specialist. The text was extracted from handwritten notes and may contain errors.
+
+Formatting rules:
+- Use HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br>
+- Fix obvious OCR errors from handwriting (misread letters, joined words)
+- Identify and format: headings, bullet points, numbered lists, underlined text
+- If text has arrows or connections, use nested lists to show hierarchy
+- Mark uncertain/illegible portions with [?] after the best guess
+- Separate distinct sections or note blocks with headings
+- Preserve the original structure and intent of the handwritten notes
+- Return only HTML, no commentary`,
+        ar: `أنت متخصص في OCR للنصوص المكتوبة بخط اليد. النص مستخرج من ملاحظات مكتوبة يدوياً وقد يحتوي على أخطاء.
+
+قواعد التنسيق:
+- استخدم HTML: <h1> <h2> <h3> <p> <ul> <ol> <li> <strong> <em> <br>
+- صحح أخطاء OCR الواضحة من الكتابة اليدوية (أحرف مقروءة خطأ، كلمات ملتصقة)
+- حدد ونسّق: العناوين، النقاط، القوائم المرقمة، النص المُسطّر
+- ضع علامة [؟] بعد أفضل تخمين للأجزاء غير المقروءة
+- افصل الأقسام المختلفة بعناوين
+- حافظ على البنية الأصلية للملاحظات
+- أعد HTML فقط، بدون تعليقات`
+    }
+};
+
+let activeTemplate = localStorage.getItem(TEMPLATE_STORAGE_KEY) || 'none';
+let customTemplatePrompt = localStorage.getItem(CUSTOM_PROMPT_KEY) || '';
+
+const btnTemplatePicker = document.getElementById('btn-template-picker');
+const templateDropdown = document.getElementById('template-dropdown');
+
+function updateTemplateUI() {
+    if (!templateDropdown) return;
+    templateDropdown.querySelectorAll('button[data-template]').forEach(btn => {
+        btn.classList.toggle('active-template', btn.dataset.template === activeTemplate);
+    });
+    // Update button label
+    if (btnTemplatePicker) {
+        const label = btnTemplatePicker.querySelector('span');
+        if (label) {
+            const names = { none: 'Template', legal: 'Legal', academic: 'Academic', invoice: 'Invoice', handwritten: 'Handwritten', custom: 'Custom' };
+            label.textContent = names[activeTemplate] || 'Template';
+        }
+        btnTemplatePicker.classList.toggle('bg-violet-200', activeTemplate !== 'none');
+    }
+}
+
+function getTemplatePrompt(isArabic) {
+    if (activeTemplate === 'none' || !activeTemplate) return null;
+    if (activeTemplate === 'custom') return customTemplatePrompt || null;
+    const tmpl = TEMPLATE_PROMPTS[activeTemplate];
+    if (!tmpl) return null;
+    return isArabic ? tmpl.ar : tmpl.en;
+}
+
+if (btnTemplatePicker) {
+    btnTemplatePicker.addEventListener('click', (e) => {
+        e.stopPropagation();
+        templateDropdown.classList.toggle('show');
+    });
+}
+
+if (templateDropdown) {
+    templateDropdown.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-template]');
+        if (!btn) return;
+
+        const tmpl = btn.dataset.template;
+
+        if (tmpl === 'custom') {
+            const current = customTemplatePrompt || '';
+            const prompt = window.prompt('Enter your custom AI refine prompt:\n\n(This will be used as the system instruction when you click AI Refine)', current);
+            if (prompt === null) return; // Cancelled
+            customTemplatePrompt = prompt.trim();
+            localStorage.setItem(CUSTOM_PROMPT_KEY, customTemplatePrompt);
+            if (!customTemplatePrompt) {
+                activeTemplate = 'none';
+            } else {
+                activeTemplate = 'custom';
+            }
+        } else {
+            activeTemplate = tmpl;
+        }
+
+        localStorage.setItem(TEMPLATE_STORAGE_KEY, activeTemplate);
+        updateTemplateUI();
+        templateDropdown.classList.remove('show');
+        showToast(activeTemplate === 'none' ? 'Template cleared' : `Template set: ${activeTemplate}`, 'info', 2000);
+    });
+}
+
+// Close template dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (templateDropdown && !templateDropdown.contains(e.target) && e.target !== btnTemplatePicker && !btnTemplatePicker?.contains(e.target)) {
+        templateDropdown.classList.remove('show');
+    }
+});
+
+updateTemplateUI();
+
+// Template-aware refine prompt getter (used by the original btnRefine handler)
+// We override the prompt constants dynamically via a getter function
+window._getRefinePrompt = function(isArabic) {
+    const templatePrompt = getTemplatePrompt(isArabic);
+    return templatePrompt || (isArabic ? REFINE_SYSTEM_PROMPT_AR : REFINE_SYSTEM_PROMPT_EN);
+};

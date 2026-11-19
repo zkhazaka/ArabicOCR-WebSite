@@ -904,6 +904,116 @@
             #chat-panel { right: 8px; left: 8px; width: auto; bottom: 80px; }
             #chat-bubble-btn { bottom: 72px; right: 16px; }
         }
+
+        /* ===== SPLIT VIEW ===== */
+        .split-view-container {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .split-view-container .split-pane-image {
+            flex: 0 0 50%;
+            overflow: auto;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            position: relative;
+        }
+
+        .split-view-container .split-pane-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
+        }
+
+        .split-view-container .split-divider {
+            width: 6px;
+            cursor: col-resize;
+            background: #e5e7eb;
+            flex-shrink: 0;
+            transition: background 0.15s;
+            position: relative;
+        }
+        .split-view-container .split-divider:hover,
+        .split-view-container .split-divider.active {
+            background: #3b82f6;
+        }
+        .split-view-container .split-divider::after {
+            content: '⋮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            color: #9ca3af;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .split-view-container .split-pane-editor {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .split-view-container .split-pane-image { background: #1e293b; }
+        body.dark-mode .split-view-container .split-divider { background: #334155; }
+        body.dark-mode .split-view-container .split-divider:hover { background: #3b82f6; }
+
+        @media (max-width: 767px) {
+            .split-view-container { flex-direction: column; }
+            .split-view-container .split-pane-image { flex: 0 0 40%; }
+            .split-view-container .split-divider { width: 100%; height: 6px; cursor: row-resize; }
+        }
+
+        /* ===== TEMPLATE PICKER ===== */
+        #template-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.12);
+            z-index: 50;
+            min-width: 220px;
+            padding: 6px;
+            animation: dropdown-pop 0.15s ease;
+        }
+        #template-dropdown.show { display: block; }
+
+        #template-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            color: #374151;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.1s;
+        }
+        #template-dropdown button:hover { background: #f3f4f6; }
+        #template-dropdown button i { width: 16px; text-align: center; color: #6b7280; }
+        #template-dropdown button.active-template { background: #eff6ff; color: #2563eb; }
+        #template-dropdown button.active-template i { color: #2563eb; }
+        #template-dropdown .template-divider { height: 1px; background: #e5e7eb; margin: 4px 0; }
+
+        body.dark-mode #template-dropdown { background: #1e293b; border-color: #334155; }
+        body.dark-mode #template-dropdown button { color: #cbd5e1; }
+        body.dark-mode #template-dropdown button:hover { background: #334155; }
     </style>
 </head>
 
@@ -1243,7 +1353,34 @@
                                     <span class="hidden sm:inline">Tables</span>
                                 </button>
 
+                                <!-- Template picker (dropdown on refine) -->
+                                <div class="relative">
+                                    <button id="btn-template-picker"
+                                        class="pill-btn bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200"
+                                        title="AI Templates">
+                                        <i class="fas fa-layer-group text-xs"></i>
+                                        <span class="hidden sm:inline">Template</span>
+                                        <i class="fas fa-caret-down text-xs ml-0.5"></i>
+                                    </button>
+                                    <div id="template-dropdown">
+                                        <button data-template="none"><i class="fas fa-ban"></i> No Template (Default)</button>
+                                        <button data-template="legal"><i class="fas fa-gavel"></i> Legal Document</button>
+                                        <button data-template="academic"><i class="fas fa-graduation-cap"></i> Academic Paper</button>
+                                        <button data-template="invoice"><i class="fas fa-file-invoice-dollar"></i> Invoice / Receipt</button>
+                                        <button data-template="handwritten"><i class="fas fa-pen-fancy"></i> Handwritten Notes</button>
+                                        <div class="template-divider"></div>
+                                        <button data-template="custom" id="btn-custom-template"><i class="fas fa-edit"></i> Custom Prompt...</button>
+                                    </div>
+                                </div>
+
                                 <div class="w-px h-5 bg-gray-200 mx-1"></div>
+
+                                <!-- Split view toggle -->
+                                <button id="btn-split-view"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                    title="Toggle Split View">
+                                    <i class="fas fa-columns text-sm"></i>
+                                </button>
 
                                 <button id="btn-copy"
                                     class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
