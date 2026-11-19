@@ -220,9 +220,12 @@
     scanDone: L === 'ar'
       ? '✅ اكتمل المسح! ماذا تريد أن أفعل بالنص؟'
       : '✅ Scan complete! What would you like me to do with the text?',
+    scanTip: L === 'ar'
+      ? '💡 نصيحة: جرّب "القوالب" لتنسيق النص كفاتورة أو مستند قانوني أو ورقة بحثية. إذا كان المستند يحتوي على جداول، جرّب "استخراج الجداول" من شريط الأدوات.'
+      : '💡 Tip: Try "Templates" to format text as an invoice, legal doc, or research paper. If your document has tables, try "Extract Tables" from the toolbar.',
     chips: L === 'ar'
-      ? [['📝 لخّص', 'لخّص هذا النص'], ['🌐 ترجم للإنجليزية', 'ترجم هذا النص إلى الإنجليزية'], ['✨ حسّن النص', 'صحّح وحسّن هذا النص المستخرج'], ['❓ اشرحه', 'اشرح لي هذا النص']]
-      : [['📝 Summarize', 'Summarize this text'], ['🌐 Translate', 'Translate this text to English'], ['✨ Refine', 'Fix and refine this extracted text'], ['❓ Explain', 'Explain this text to me']]
+      ? [['📝 لخّص', 'لخّص هذا النص'], ['🌐 ترجم للإنجليزية', 'ترجم هذا النص إلى الإنجليزية'], ['✨ حسّن النص', 'صحّح وحسّن هذا النص المستخرج'], ['📊 استخرج الجداول', 'استخرج الجداول من هذا النص'], ['❓ اشرحه', 'اشرح لي هذا النص']]
+      : [['📝 Summarize', 'Summarize this text'], ['🌐 Translate', 'Translate this text to English'], ['✨ Refine', 'Fix and refine this extracted text'], ['📊 Extract Tables', 'Extract tables from this text'], ['❓ Explain', 'Explain this text to me']]
   };
 
   // ── UI (Shadow DOM so site CSS can't interfere) ───────────────────
@@ -571,6 +574,7 @@
       open(true);
       addMsg(T.scanDone, 'bot');
       addChips(T.chips);
+      setTimeout(function () { addMsg(T.scanTip, 'bot'); }, 800);
     }
   };
   window.OCRAgent = { open: function () { open(); }, close: close, engage: engage };
