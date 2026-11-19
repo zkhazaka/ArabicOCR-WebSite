@@ -40,6 +40,35 @@ const mobileHeader = document.querySelector('header');
 const sourceImage = document.getElementById('source-image');
 const tabTables = document.getElementById('tab-tables');
 
+// Chat bubble & panel elements (declared early to avoid hoisting issues)
+const chatBubbleBtn = document.getElementById('chat-bubble-btn');
+const chatPanel = document.getElementById('chat-panel');
+const chatInput = document.getElementById('chat-input');
+const chatSendBtn = document.getElementById('chat-send-btn');
+
+// Table extraction elements
+const btnExtractTables = document.getElementById('btn-extract-tables');
+const tablesViewerContainer = document.getElementById('tables-viewer-container');
+const tablesContent = document.getElementById('tables-content');
+const btnCopyCsv = document.getElementById('btn-copy-csv');
+
+// Split view
+const btnSplitView = document.getElementById('btn-split-view');
+
+// Template dropdown
+const templateDropdown = document.getElementById('template-dropdown');
+
+// Diff view
+const btnDiffView = document.getElementById('btn-diff-view');
+const diffViewerContainer = document.getElementById('diff-viewer-container');
+
+// Share
+const btnShare = document.getElementById('btn-share');
+const shareModal = document.getElementById('share-modal');
+const shareLinkInput = document.getElementById('share-link-input');
+const btnCopyShareLink = document.getElementById('btn-copy-share-link');
+const btnCloseShareModal = document.getElementById('btn-close-share-modal');
+
 // PDF Modal Elements
 const pdfSelectionModal = document.getElementById('pdf-selection-modal');
 const pdfPagesGrid = document.getElementById('pdf-pages-grid');
@@ -2125,11 +2154,7 @@ async function processBatchOCR(pdfDoc, pageNumbers) {
 // DOCUMENT Q&A CHAT
 // ═══════════════════════════════════════════════════════════════════
 
-const chatBubbleBtn = document.getElementById('chat-bubble-btn');
-const chatPanel = document.getElementById('chat-panel');
 const chatCloseBtn = document.getElementById('chat-close-btn');
-const chatInput = document.getElementById('chat-input');
-const chatSendBtn = document.getElementById('chat-send-btn');
 const chatMessages = document.getElementById('chat-messages');
 
 let chatHistory = [];
@@ -2240,11 +2265,6 @@ function updateChatBubbleVisibility() {
 // ═══════════════════════════════════════════════════════════════════
 // AI TABLE EXTRACTION
 // ═══════════════════════════════════════════════════════════════════
-
-const btnExtractTables = document.getElementById('btn-extract-tables');
-const tablesViewerContainer = document.getElementById('tables-viewer-container');
-const tablesContent = document.getElementById('tables-content');
-const btnCopyCsv = document.getElementById('btn-copy-csv');
 
 let extractedTablesHtml = '';
 
@@ -2444,7 +2464,6 @@ function exportAsPdf(html, filename) {
 // PHASE 3.1: SIDE-BY-SIDE SPLIT VIEW
 // ═══════════════════════════════════════════════════════════════════
 
-const btnSplitView = document.getElementById('btn-split-view');
 let splitViewActive = false;
 
 function enableSplitView() {
@@ -2691,7 +2710,6 @@ let activeTemplate = localStorage.getItem(TEMPLATE_STORAGE_KEY) || 'none';
 let customTemplatePrompt = localStorage.getItem(CUSTOM_PROMPT_KEY) || '';
 
 const btnTemplatePicker = document.getElementById('btn-template-picker');
-const templateDropdown = document.getElementById('template-dropdown');
 
 function updateTemplateUI() {
     if (!templateDropdown) return;
@@ -2773,8 +2791,6 @@ window._getRefinePrompt = function(isArabic) {
 // PHASE 4.1: OCR COMPARISON / DIFF VIEW
 // ═══════════════════════════════════════════════════════════════════
 
-const btnDiffView = document.getElementById('btn-diff-view');
-const diffViewerContainer = document.getElementById('diff-viewer-container');
 const diffOriginal = document.getElementById('diff-original');
 const diffRefined = document.getElementById('diff-refined');
 const btnCloseDiff = document.getElementById('btn-close-diff');
@@ -2886,12 +2902,6 @@ if (btnCloseDiff) {
 // ═══════════════════════════════════════════════════════════════════
 // PHASE 4.2: SHARE DOCUMENT LINK
 // ═══════════════════════════════════════════════════════════════════
-
-const btnShare = document.getElementById('btn-share');
-const shareModal = document.getElementById('share-modal');
-const shareLinkInput = document.getElementById('share-link-input');
-const btnCopyShareLink = document.getElementById('btn-copy-share-link');
-const btnCloseShareModal = document.getElementById('btn-close-share-modal');
 
 function compressText(text) {
     // Use base64 encoding of the text for URL sharing
