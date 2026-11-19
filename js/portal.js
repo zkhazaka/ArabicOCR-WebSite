@@ -38,6 +38,7 @@ const sidebar = document.querySelector('aside');
 const mobileHeader = document.querySelector('header');
 
 const sourceImage = document.getElementById('source-image');
+const tabTables = document.getElementById('tab-tables');
 
 // PDF Modal Elements
 const pdfSelectionModal = document.getElementById('pdf-selection-modal');
@@ -2241,7 +2242,6 @@ function updateChatBubbleVisibility() {
 // ═══════════════════════════════════════════════════════════════════
 
 const btnExtractTables = document.getElementById('btn-extract-tables');
-const tabTables = document.getElementById('tab-tables');
 const tablesViewerContainer = document.getElementById('tables-viewer-container');
 const tablesContent = document.getElementById('tables-content');
 const btnCopyCsv = document.getElementById('btn-copy-csv');

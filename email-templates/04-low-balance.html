@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Your Page Balance Is Running Low</title>
+  <style type="text/css">
+    body, table, td { font-family: Arial, Helvetica, sans-serif; }
+    img { border: 0; outline: none; text-decoration: none; display: block; }
+    a { color: #FFCB05; text-decoration: underline; }
+    @media only screen and (max-width: 620px) {
+      .wrapper { width: 100% !important; }
+      .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+      .mobile-stack { display: block !important; width: 100% !important; padding: 0 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f4;">
+    <tr><td align="center" style="padding:24px 16px;">
+
+      <table role="presentation" class="wrapper" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;">
+
+        <tr><td style="background-color:#FFCB05;height:6px;font-size:1px;line-height:1px;">&nbsp;</td></tr>
+
+        <tr><td class="mobile-padding" style="padding:32px 40px 24px;">
+          <p style="font-size:24px;font-weight:bold;color:#1F2D3D;margin:0 0 6px;line-height:1.2;">Your Page Balance Is Running Low</p>
+          <p style="font-size:16px;color:#414141;margin:0;line-height:1.5;">Top up before you run out</p>
+        </td></tr>
+
+        <tr><td class="mobile-padding" style="padding:0 40px 32px;">
+          <p style="font-size:16px;color:#414141;line-height:1.5;margin:0 0 20px;">Hi {{ contact.FIRSTNAME | default : "there" }},</p>
+          <p style="font-size:16px;color:#414141;line-height:1.5;margin:0 0 24px;">Your Arabic OCR page balance is getting low. We wanted to let you know so you do not get interrupted during your work.</p>
+
+          <!-- Balance Box -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9E0;border:1px solid #FFCB05;border-radius:4px;margin-bottom:24px;">
+            <tr><td style="padding:20px;text-align:center;">
+              <p style="color:#1F2D3D;font-size:14px;font-weight:bold;margin:0 0 4px;">Current Balance</p>
+              <p style="color:#1F2D3D;font-size:32px;font-weight:bold;margin:0;">{{ contact.PAGES_BALANCE | default : "< 5" }}</p>
+              <p style="color:#666666;font-size:13px;margin:4px 0 0;">pages remaining</p>
+            </td></tr>
+          </table>
+
+          <!-- Options -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr>
+              <td class="mobile-stack" width="50%" style="padding-right:8px;" valign="top">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e0e0e0;border-radius:4px;text-align:center;">
+                  <tr><td style="padding:18px 14px;">
+                    <p style="color:#1F2D3D;font-size:14px;font-weight:bold;margin:0 0 4px;">100 Pages</p>
+                    <p style="color:#1F2D3D;font-size:22px;font-weight:bold;margin:0;">$4.99</p>
+                    <p style="color:#666666;font-size:12px;margin:4px 0 0;">about 5 cents per scan</p>
+                  </td></tr>
+                </table>
+              </td>
+              <td class="mobile-stack" width="50%" style="padding-left:8px;" valign="top">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #FFCB05;border-radius:4px;text-align:center;background:#FFF9E0;">
+                  <tr><td style="padding:18px 14px;">
+                    <p style="color:#1F2D3D;font-size:14px;font-weight:bold;margin:0 0 4px;">Go Pro</p>
+                    <p style="color:#1F2D3D;font-size:22px;font-weight:bold;margin:0;">$9.99<span style="font-size:14px;font-weight:normal;">/mo</span></p>
+                    <p style="color:#666666;font-size:12px;margin:4px 0 0;">unlimited scans</p>
+                  </td></tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <!-- CTA -->
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+            <tr><td align="center" style="background-color:#FFCB05;border-radius:4px;">
+              <a href="https://arabic-ocr.com/pricing.html" target="_blank" style="display:inline-block;padding:12px 36px;font-size:16px;font-weight:bold;color:#000;text-decoration:none;font-family:Arial,sans-serif;">Get More Pages</a>
+            </td></tr>
+          </table>
+
+          <p style="font-size:13px;color:#666666;text-align:center;margin:16px 0 0;line-height:1.5;">Pages never expire. Buy once, use anytime across all your devices.</p>
+        </td></tr>
+
+        <tr><td class="mobile-padding" style="padding:0 40px;"><div style="border-top:2px solid #aaaaaa;"></div></td></tr>
+
+        <tr><td class="mobile-padding" style="padding:20px 40px;">
+          <p style="font-size:16px;color:#414141;line-height:1.5;margin:0;">Need help? Reply to this email and we will assist you.</p>
+        </td></tr>
+
+        <tr><td class="mobile-padding" style="padding:40px 40px 20px;">
+          <p style="font-size:14px;font-weight:bold;color:#000;margin:0 0 4px;">Kanzati</p>
+          <p style="font-size:14px;color:#666666;margin:0 0 10px;">Zahle, Lebanon</p>
+          <p style="font-size:14px;color:#666666;margin:0 0 4px;">This email was sent to {{ contact.EMAIL }}.</p>
+          <p style="font-size:14px;color:#666666;margin:0;">You received this email because you have an account with us.</p>
+          <p style="font-size:14px;margin:10px 0 0;"><a href="{{ unsubscribe }}" target="_blank" style="color:#666666;text-decoration:underline;">Unsubscribe</a></p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

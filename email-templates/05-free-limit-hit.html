@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>You Have Used All Your Free Scans</title>
+  <style type="text/css">
+    body, table, td { font-family: Arial, Helvetica, sans-serif; }
+    img { border: 0; outline: none; text-decoration: none; display: block; }
+    a { color: #FFCB05; text-decoration: underline; }
+    @media only screen and (max-width: 620px) {
+      .wrapper { width: 100% !important; }
+      .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f4;">
+    <tr><td align="center" style="padding:24px 16px;">
+
+      <table role="presentation" class="wrapper" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:4px;">
+
+        <tr><td style="background-color:#FFCB05;height:6px;font-size:1px;line-height:1px;">&nbsp;</td></tr>
+
+        <tr><td class="mobile-padding" style="padding:32px 40px 24px;">
+          <p style="font-size:24px;font-weight:bold;color:#1F2D3D;margin:0 0 6px;line-height:1.2;">You Have Used All 10 Free Scans</p>
+          <p style="font-size:16px;color:#414141;margin:0;line-height:1.5;">Upgrade to keep scanning this month</p>
+        </td></tr>
+
+        <tr><td class="mobile-padding" style="padding:0 40px 32px;">
+          <p style="font-size:16px;color:#414141;line-height:1.5;margin:0 0 20px;">Hi {{ contact.FIRSTNAME | default : "there" }},</p>
+          <p style="font-size:16px;color:#414141;line-height:1.5;margin:0 0 24px;">You have reached the monthly limit of 10 free scans. We hope you have been enjoying Arabic OCR. Here is how to keep going:</p>
+
+          <!-- Option 1 -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9E0;border-left:4px solid #FFCB05;border-radius:0 4px 4px 0;margin-bottom:12px;">
+            <tr><td style="padding:16px 20px;">
+              <p style="color:#1F2D3D;font-size:15px;font-weight:bold;margin:0 0 4px;">100 Pages Pack - $4.99</p>
+              <p style="color:#666666;font-size:14px;margin:0;line-height:1.5;">Pay once, pages never expire. Use on any device.</p>
+            </td></tr>
+          </table>
+
+          <!-- Option 2 (highlight) -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9E0;border:2px solid #FFCB05;border-radius:4px;margin-bottom:12px;">
+            <tr><td style="padding:16px 20px;">
+              <p style="color:#666666;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Most popular</p>
+              <p style="color:#1F2D3D;font-size:15px;font-weight:bold;margin:0 0 4px;">Pro Monthly - $9.99/month</p>
+              <p style="color:#666666;font-size:14px;margin:0;line-height:1.5;">Unlimited scans. AI refine, translate, summarize. Cancel anytime.</p>
+            </td></tr>
+          </table>
+
+          <!-- Option 3 -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9E0;border-left:4px solid #FFCB05;border-radius:0 4px 4px 0;margin-bottom:24px;">
+            <tr><td style="padding:16px 20px;">
+              <p style="color:#1F2D3D;font-size:15px;font-weight:bold;margin:0 0 4px;">Pro Yearly - $49.99/year</p>
+              <p style="color:#666666;font-size:14px;margin:0;line-height:1.5;">Save 58% compared to monthly. Best value for regular users.</p>
+            </td></tr>
+          </table>
+
+          <!-- Discount -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9E0;border:1px dashed #FFCB05;border-radius:4px;margin-bottom:24px;">
+            <tr><td style="padding:14px 20px;text-align:center;">
+              <p style="color:#1F2D3D;font-size:14px;margin:0;line-height:1.5;">Use code <strong style="font-family:monospace;font-size:15px;letter-spacing:1px;">GS7ROCLMYB</strong> for <strong>10% off</strong> any plan.</p>
+            </td></tr>
+          </table>
+
+          <!-- CTA -->
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+            <tr><td align="center" style="background-color:#FFCB05;border-radius:4px;">
+              <a href="https://arabic-ocr.com/pricing.html" target="_blank" style="display:inline-block;padding:12px 36px;font-size:16px;font-weight:bold;color:#000;text-decoration:none;font-family:Arial,sans-serif;">Upgrade Now</a>
+            </td></tr>
+          </table>
+
+          <p style="font-size:13px;color:#666666;text-align:center;margin:16px 0 0;line-height:1.5;">Not ready? Your free scans reset next month.</p>
+        </td></tr>
+
+        <tr><td class="mobile-padding" style="padding:0 40px;"><div style="border-top:2px solid #aaaaaa;"></div></td></tr>
+
+        <tr><td class="mobile-padding" style="padding:20px 40px;">
+          <p style="font-size:16px;color:#414141;line-height:1.5;margin:0;">Questions? Reply to this email and we will help.</p>
+        </td></tr>
+
+        <tr><td class="mobile-padding" style="padding:40px 40px 20px;">
+          <p style="font-size:14px;font-weight:bold;color:#000;margin:0 0 4px;">Kanzati</p>
+          <p style="font-size:14px;color:#666666;margin:0 0 10px;">Zahle, Lebanon</p>
+          <p style="font-size:14px;color:#666666;margin:0 0 4px;">This email was sent to {{ contact.EMAIL }}.</p>
+          <p style="font-size:14px;color:#666666;margin:0;">You received this email because you have an account with us.</p>
+          <p style="font-size:14px;margin:10px 0 0;"><a href="{{ unsubscribe }}" target="_blank" style="color:#666666;text-decoration:underline;">Unsubscribe</a></p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
