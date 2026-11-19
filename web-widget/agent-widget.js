@@ -566,6 +566,8 @@
       // Fires each time a new scan result appears (not once per session)
       if (busy) return;
       greeted = true;
+      // Clear previous chat messages so we don't duplicate the scan-complete prompt
+      msgs.innerHTML = '';
       open(true);
       addMsg(T.scanDone, 'bot');
       addChips(T.chips);
