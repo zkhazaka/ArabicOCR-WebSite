@@ -1,0 +1,88 @@
+# Block direct access to config, environment, server and rules files.
+# These were all publicly fetchable (200) and crawlable: package.json and server.js
+# expose the backend layout, and the *.rules files are the Firebase security rules.
+<FilesMatch "^(config\.php|\.env|package\.json|package-lock\.json|server\.js|worker\.js|wrangler\.toml|debug_paddle\.php|.*\.rules|.*\.rules\..*|.*\.log)$">
+    Require all denied
+</FilesMatch>
+
+# Serve our own 404 page instead of the Apache default.
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# www/http requests for index.html specifically: collapse straight to the
+# canonical root in one hop, instead of falling through to the www/https rule
+# below and then needing a second 301 for the index.html strip. Must come
+# before the general www/https rule since it's the more specific pattern.
+RewriteCond %{HTTP_HOST} ^www\.arabic-ocr\.com [NC,OR]
+RewriteCond %{HTTPS} off
+RewriteRule ^index\.html$ https://arabic-ocr.com/ [L,R=301,NE]
+
+# Redirect www to non-www and force HTTPS
+RewriteCond %{HTTP_HOST} ^www\.arabic-ocr\.com [NC,OR]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://arabic-ocr.com/$1 [L,R=301,NE]
+
+# Redirect index.html to root (already on canonical host+scheme)
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+index\.html [NC]
+RewriteRule ^index\.html$ https://arabic-ocr.com/ [L,R=301]
+
+# The video demo page used to be an HTML meta-refresh stub, which Google reports as a
+# soft redirect. This is a real 301 to the same destination.
+RewriteRule ^arabic-ocr-video-demo\.html$ https://arabic-ocr.com/videos/arabic-ocr-demo/ [L,R=301]
+
+# Bare blog-post.html (no ?slug= or ?id=) has no post to show and previously fell
+# back to a client-side window.location redirect - invisible to a crawler's raw
+# fetch, which only ever saw the generic placeholder shell. Real posts always
+# carry a query string (either via /blog/<slug> rewritten below, or legacy
+# ?id=<docid> links), so this only matches the contentless bare URL.
+RewriteCond %{QUERY_STRING} ^$
+RewriteRule ^blog-post\.html$ https://arabic-ocr.com/blog.html [L,R=301]
+
+# Pretty blog URLs: /blog/<slug> serves blog-post.html, which resolves the slug against
+# Firestore. Internal links, canonicals and the sitemap all use this form; the legacy
+# blog-post.html?id=<docid> URLs still work and are not redirected, so shared links live.
+RewriteRule ^blog/([A-Za-z0-9_-]+)/?$ /blog-post.html?slug=$1 [L,QSA]
+
+<IfModule mod_headers.c>
+    Header unset Content-Security-Policy
+    Header always unset Content-Security-Policy
+</IfModule>
+
+# ---------------------------------------------------------------
+# Always serve the current JS / CSS
+# ---------------------------------------------------------------
+# "no-cache" does NOT mean "do not cache" - it means "cache it, but
+# revalidate before every use". The browser sends If-None-Match and gets
+# a 304 (a few bytes, no body) when the file is unchanged, or the new file
+# when it is. So visitors can never run a stale bundle, and unchanged files
+# still cost almost nothing.
+#
+# Do NOT swap this for "no-store": that forces a full re-download of every
+# file on every page view.
+#
+# This is applied at the server rather than with ?v= query strings because
+# ES modules import each other directly - paddle-payment.js does
+# `import ... from './auth.js'`. A version on the HTML entry point never
+# reaches those nested imports, so auth.js would stay stale.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|mjs|css)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+
+    # HTML too, so a page never pins an old module graph.
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# ETags are what make the 304s above work. Default to mtime+size rather than
+# inode, which changes on FTP re-upload and would break revalidation.
+FileETag MTime Size
+
+# Long-lived caching for assets that are safe to hold on to.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|woff|woff2|ttf|eot|mp4|webm)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+</IfModule>

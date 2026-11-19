@@ -1,0 +1,14 @@
+User-agent: *
+
+# blog-admin.html and blog-editor.html are intentionally NOT disallowed here.
+# They now carry <meta name="robots" content="noindex, nofollow">, and a crawler has
+# to be able to FETCH a page to see that tag. Disallowing them blocks the fetch and
+# leaves them eligible to appear in results as URL-only entries.
+#
+# email_template.html and the seed-*.js files no longer exist, so their rules are gone.
+
+Disallow: /cgi-bin/
+Disallow: /node_modules/
+Disallow: /uploads/
+
+Sitemap: https://arabic-ocr.com/sitemap.xml

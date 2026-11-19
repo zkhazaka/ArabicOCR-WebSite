@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Updated 2026-09-10 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+    <url>
+        <loc>https://arabic-ocr.com/</loc>
+        <lastmod>2026-09-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/icon.jpg</image:loc>
+            <image:title>Arabic OCR – Extract Arabic Text from Images &amp; PDFs Online</image:title>
+        </image:image>
+    </url>
+
+<url>
+        <loc>https://arabic-ocr.com/pdf-studio.html</loc>
+        <lastmod>2026-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/mac2.webp</image:loc>
+            <image:title>Arabic OCR PDF Studio – Edit &amp; Merge PDF Files</image:title>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/pricing.html</loc>
+        <lastmod>2026-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog.html</loc>
+        <lastmod>2026-09-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/ultimate-guide-arabic-ocr.html</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/videos/arabic-ocr-portal-tutorial/</loc>
+        <lastmod>2026-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://i.ytimg.com/vi/HFVlGT3s9h0/maxresdefault.jpg</image:loc>
+            <image:title>Arabic OCR Web Portal Tutorial – Complete Guide</image:title>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/videos/arabic-ocr-pdf-studio/</loc>
+        <lastmod>2026-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://i.ytimg.com/vi/uqh3pI1yL3U/maxresdefault.jpg</image:loc>
+            <image:title>Arabic OCR PDF Studio Tutorial – Edit &amp; Manage PDFs Online</image:title>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/videos/arabic-ocr-demo/</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/videos/arabic-ocr-macos-demo/</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/about.html</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/contact.html</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/terms.html</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/privacy.html</loc>
+        <lastmod>2026-07-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/arabic-handwriting-ocr-ai</loc>
+        <lastmod>2026-02-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/uploads/blog-featured/img_699acbe17f8981.29523963_1771752417.png</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/macos-apple-llm-fast-ocr</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/mac2.webp</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/apps-available-ios-android</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/sc1.webp</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/apple-llm-vision-privacy</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/mac1.webp</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/google-vision-sdk-features</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/googleai.svg</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/ultimate-pdf-editor</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/ocr1200.jpg</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/mastering-web-portal</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://arabic-ocr.com/web1.png</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/handwriting-support-update</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1503551723145-6c040742065b?auto=format&amp;fit=crop&amp;q=80&amp;w=1000</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/tutorial-digitizing-pdfs</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&amp;fit=crop&amp;q=80&amp;w=1000</image:loc>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://arabic-ocr.com/blog/future-of-arabic-ocr</loc>
+        <lastmod>2026-02-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&amp;fit=crop&amp;q=80&amp;w=1000</image:loc>
+        </image:image>
+    </url>
+
+</urlset>

@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic OCR Web Portal - Online Dashboard & Tools</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Arabic OCR" />
+    <meta property="og:title" content="Arabic OCR Web Portal - Online Dashboard & Tools" />
+    <meta property="og:description" content="Access your Arabic OCR dashboard. Scan images, detect handwriting, edit texts, and manage documents online. | بوابة استخراج النصوص العربية وإدارة المستندات أونلاين. لوحة تحكم متكاملة لنسخ النصوص وترجمتها." />
+    <meta property="og:url" content="https://arabic-ocr.com/portal-v2.html" />
+    <meta property="og:image" content="https://arabic-ocr.com/icon.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Arabic OCR Web Portal - Online Dashboard & Tools" />
+    <meta name="twitter:description" content="Access your Arabic OCR dashboard. Scan images, detect handwriting, edit texts, and manage documents online. | بوابة استخراج النصوص العربية وإدارة المستندات أونلاين. لوحة تحكم متكاملة لنسخ النصوص وترجمتها." />
+    <meta name="twitter:image" content="https://arabic-ocr.com/icon.jpg" />
+    <meta name="description" content="Access your Arabic OCR dashboard. Scan images, detect handwriting, edit texts, and manage documents online." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script>window.global = window;</script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Almarai&family=Amiri&family=Aref+Ruqaa&family=Cairo&family=Changa&family=El+Messiri&family=Lalezar&family=Noto+Kufi+Arabic&family=Noto+Naskh+Arabic&family=Noto+Sans+Arabic&family=Reem+Kufi&family=Tajawal&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Quill CSS CDN -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <!-- Paddle.js (Billing V2) -->
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
+    <style>
+        /* ===== QUILL FONT CLASSES ===== */
+        .ql-font-cairo { font-family: 'Cairo', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="cairo"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="cairo"]::before { content: 'Cairo'; font-family: 'Cairo', sans-serif; }
+
+        .ql-font-tajawal { font-family: 'Tajawal', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="tajawal"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="tajawal"]::before { content: 'Tajawal'; font-family: 'Tajawal', sans-serif; }
+
+        .ql-font-almarai { font-family: 'Almarai', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="almarai"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="almarai"]::before { content: 'Almarai'; font-family: 'Almarai', sans-serif; }
+
+        .ql-font-amiri { font-family: 'Amiri', serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="amiri"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="amiri"]::before { content: 'Amiri'; font-family: 'Amiri', serif; }
+
+        .ql-font-changa { font-family: 'Changa', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="changa"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="changa"]::before { content: 'Changa'; font-family: 'Changa', sans-serif; }
+
+        .ql-font-notosansarabic { font-family: 'Noto Sans Arabic', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="notosansarabic"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="notosansarabic"]::before { content: 'Noto Sans Arabic'; font-family: 'Noto Sans Arabic', sans-serif; }
+
+        .ql-font-notokufiarabic { font-family: 'Noto Kufi Arabic', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="notokufiarabic"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="notokufiarabic"]::before { content: 'Noto Kufi Arabic'; font-family: 'Noto Kufi Arabic', sans-serif; }
+
+        .ql-font-notonaskharabic { font-family: 'Noto Naskh Arabic', serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="notonaskharabic"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="notonaskharabic"]::before { content: 'Noto Naskh Arabic'; font-family: 'Noto Naskh Arabic', serif; }
+
+        .ql-font-lalezar { font-family: 'Lalezar', display; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="lalezar"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="lalezar"]::before { content: 'Lalezar'; font-family: 'Lalezar', display; }
+
+        .ql-font-arefruqaa { font-family: 'Aref Ruqaa', serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arefruqaa"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arefruqaa"]::before { content: 'Aref Ruqaa'; font-family: 'Aref Ruqaa', serif; }
+
+        .ql-font-reemkufi { font-family: 'Reem Kufi', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="reemkufi"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="reemkufi"]::before { content: 'Reem Kufi'; font-family: 'Reem Kufi', sans-serif; }
+
+        .ql-font-elmessiri { font-family: 'El Messiri', sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="elmessiri"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="elmessiri"]::before { content: 'El Messiri'; font-family: 'El Messiri', sans-serif; }
+
+        /* ===== QUILL OVERRIDES ===== */
+        #editor-container {
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+        }
+
+        .ql-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: none !important;
+        }
+
+        .ql-editor {
+            flex: 1;
+            overflow-y: auto;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .ql-editor[dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .ql-editor .ql-align-left {
+            text-align: left;
+        }
+
+        .ql-toolbar.ql-snow {
+            border: none;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        /* ===== REFINED DOCUMENT STYLES (AI Refine output) ===== */
+        .ql-editor h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 1.2rem 0 0.6rem;
+            line-height: 1.25;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 0.4rem;
+        }
+        .ql-editor h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 1rem 0 0.4rem;
+            line-height: 1.3;
+        }
+        .ql-editor h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1d4ed8;
+            margin: 0.8rem 0 0.3rem;
+        }
+        .ql-editor p {
+            margin: 0.5rem 0;
+            line-height: 1.75;
+            color: #1e293b;
+        }
+        .ql-editor ul, .ql-editor ol {
+            margin: 0.5rem 0 0.5rem 1.5rem;
+            padding: 0;
+        }
+        .ql-editor li {
+            margin: 0.3rem 0;
+            line-height: 1.7;
+            color: #334155;
+        }
+        .ql-editor strong {
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .ql-editor em {
+            color: #475569;
+        }
+        body.dark-mode .ql-editor h1 { color: #f1f5f9; border-bottom-color: #3b82f6; }
+        body.dark-mode .ql-editor h2 { color: #93c5fd; }
+        body.dark-mode .ql-editor h3 { color: #60a5fa; }
+        body.dark-mode .ql-editor p  { color: #cbd5e1; }
+        body.dark-mode .ql-editor li { color: #94a3b8; }
+        body.dark-mode .ql-editor strong { color: #f1f5f9; }
+
+        /* ===== BASE LAYOUT ===== */
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .sidebar-nav-item:hover {
+            background: rgba(255,255,255,0.07);
+            color: #f1f5f9;
+        }
+
+        .sidebar-nav-item.active {
+            background: rgba(59,130,246,0.18);
+            color: #93c5fd;
+        }
+
+        .sidebar-nav-item i {
+            width: 18px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-credits-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.15s, transform 0.15s;
+            box-shadow: 0 2px 8px rgba(234,88,12,0.35);
+        }
+
+        .sidebar-credits-btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .sidebar-credits-btn i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* ===== STEP INDICATORS ===== */
+        .step-connector {
+            width: 40px;
+            height: 2px;
+            background: #e2e8f0;
+            border-radius: 1px;
+        }
+
+        .step-connector.active {
+            background: #3b82f6;
+        }
+
+        /* ===== PILL BUTTONS ===== */
+        .pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            line-height: 1.4;
+        }
+
+        /* ===== DROP ZONE ===== */
+        #drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            background: #fff;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        #drop-zone:hover, #drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        /* ===== DARK MODE ===== */
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        body.dark-mode #top-header {
+            background-color: #1e293b !important;
+            border-bottom-color: #334155 !important;
+        }
+
+        body.dark-mode aside {
+            background-color: #020617 !important;
+        }
+
+        body.dark-mode .bg-white,
+        body.dark-mode .wizard-step,
+        body.dark-mode #step-result {
+            background-color: #1e293b !important;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+
+        body.dark-mode .text-gray-900,
+        body.dark-mode .text-gray-800,
+        body.dark-mode .text-gray-700 {
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .text-gray-600,
+        body.dark-mode .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .border-gray-200,
+        body.dark-mode .border-gray-300 {
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode .bg-gray-50,
+        body.dark-mode .bg-gray-100 {
+            background-color: #0f172a !important;
+        }
+
+        body.dark-mode .hover\:bg-gray-50:hover,
+        body.dark-mode .hover\:bg-gray-100:hover {
+            background-color: #334155 !important;
+        }
+
+        body.dark-mode input,
+        body.dark-mode textarea {
+            background-color: #334155 !important;
+            color: white !important;
+            border-color: #475569 !important;
+        }
+
+        body.dark-mode #drop-zone {
+            background-color: #1e293b !important;
+            border-color: #475569 !important;
+        }
+
+        body.dark-mode .text-blue-700,
+        body.dark-mode .text-blue-600 {
+            color: #60a5fa !important;
+        }
+
+        body.dark-mode .bg-blue-50 {
+            background-color: #1e3a8a !important;
+            color: #bfdbfe !important;
+        }
+
+        body.dark-mode #result-loading-overlay {
+            background-color: rgba(0, 0, 0, 0.92);
+        }
+
+        body.dark-mode .ql-toolbar.ql-snow {
+            background-color: #1e293b;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .ql-editor {
+            color: #f1f5f9;
+            background-color: #1e293b;
+        }
+
+        /* ===== PAGES BALANCE BADGE (JS-injected) ===== */
+        #pages-balance-badge {
+            background: linear-gradient(135deg, rgba(109,40,217,0.25) 0%, rgba(37,99,235,0.25) 100%) !important;
+            border: 1px solid rgba(139,92,246,0.35) !important;
+            border-radius: 16px !important;
+            padding: 16px !important;
+            margin-top: 12px !important;
+            box-shadow: 0 0 0 1px rgba(139,92,246,0.1), 0 8px 24px rgba(109,40,217,0.18) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 0 !important;
+            width: 100% !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        /* Glow orb behind the badge */
+        #pages-balance-badge::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Hide the default file icon */
+        #pages-balance-badge > i {
+            display: none !important;
+        }
+
+        /* Inner div wrapper */
+        #pages-balance-badge > div {
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        /* Label: "PAGES BALANCE" */
+        #pages-balance-badge p:first-child {
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.12em !important;
+            color: #a78bfa !important;
+            margin-bottom: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 5px !important;
+            text-transform: uppercase !important;
+        }
+
+        #pages-balance-badge p:first-child::before {
+            content: '⚡';
+            font-size: 11px;
+        }
+
+        /* Large count number */
+        #pages-balance-count {
+            font-size: 2.25rem !important;
+            font-weight: 900 !important;
+            color: #ffffff !important;
+            line-height: 1 !important;
+            display: block !important;
+            margin-bottom: 4px !important;
+            font-family: 'SF Mono', ui-monospace, 'Courier New', monospace !important;
+            letter-spacing: 0.08em !important;
+            letter-spacing: -0.02em !important;
+        }
+
+        /* "scans remaining" text */
+        #pages-balance-badge p:last-child {
+            font-size: 11px !important;
+            color: rgba(196,181,253,0.65) !important;
+            font-weight: 500 !important;
+        }
+
+        /* ===== MOBILE BOTTOM NAV ===== */
+        #mobile-bottom-nav {
+            display: none;
+        }
+
+        @media (max-width: 767px) {
+            #mobile-bottom-nav {
+                display: flex;
+            }
+        }
+
+        .mobile-nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 8px 4px;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: color 0.15s;
+        }
+
+        .mobile-nav-tab.active,
+        .mobile-nav-tab:hover {
+            color: #3b82f6;
+        }
+
+        .mobile-nav-tab i {
+            font-size: 18px;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        body.dark-mode ::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* Tabs style for result area */
+        .result-tab {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            background: transparent;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            white-space: nowrap;
+            transition: color 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .result-tab:hover {
+            color: #1e40af;
+        }
+
+        .result-tab.active-tab {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        /* Progress bar gradient animation */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .progress-shimmer {
+            background: linear-gradient(90deg, #3b82f6 25%, #60a5fa 50%, #3b82f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col overflow-hidden" style="visibility:hidden; background-color:#f8fafc;">
+
+    <!-- ===== TOP HEADER ===== -->
+    <header id="top-header" class="h-14 bg-white border-b border-gray-200 z-30 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
+
+        <!-- Left: Logo + Brand -->
+        <div class="flex items-center gap-3">
+            <!-- Mobile menu button -->
+            <button id="btn-mobile-menu" class="md:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition mr-1">
+                <i class="fas fa-bars text-lg"></i>
+            </button>
+            <img src="/logo.png" alt="Arabic OCR Logo" class="w-8 h-8" />
+            <span class="font-bold text-gray-900 text-base tracking-tight">Arabic OCR</span>
+        </div>
+
+        <!-- Center: Nav links (desktop only) -->
+        <nav class="hidden md:flex items-center gap-6">
+            <a href="index.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium" data-i18n="nav_home">Home</a>
+            <a href="pdf-studio.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">PDF Studio</a>
+            <a href="blog.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">Blog</a>
+            <a href="contact.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium" data-i18n="nav_contact">Contact</a>
+        </nav>
+
+        <!-- Right: Controls + User -->
+        <div class="flex items-center gap-1 md:gap-2">
+
+            <!-- Dark Mode Toggle (Desktop) -->
+            <button id="dark-mode-toggle"
+                class="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 transition"
+                title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+                <svg id="icon-moon-desktop" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+                <svg id="icon-sun-desktop" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+            </button>
+
+            <!-- Dark Mode Toggle (Mobile) -->
+            <button id="dark-mode-toggle-mobile"
+                class="md:hidden p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 transition"
+                title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+                <svg id="icon-moon-mobile" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+                <svg id="icon-sun-mobile" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+            </button>
+
+            <!-- Language Toggle (Desktop) -->
+            <button id="lang-toggle"
+                class="hidden md:flex p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 transition font-bold text-sm"
+                aria-label="Toggle Language" title="Switch Language">
+                <span id="lang-label-desktop">عربي</span>
+            </button>
+
+            <!-- Language Toggle (Mobile) -->
+            <button id="lang-toggle-mobile"
+                class="md:hidden p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-gray-100 transition font-bold text-sm"
+                aria-label="Toggle Language">
+                <span id="lang-label-mobile">ع</span>
+            </button>
+
+            <!-- User Avatar / Menu -->
+            <div class="relative z-50 ml-1">
+                <button id="user-menu-btn" class="flex items-center focus:outline-none">
+                    <div id="user-avatar"
+                        class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                        U
+                    </div>
+                </button>
+
+                <!-- Dropdown -->
+                <div id="user-menu-dropdown"
+                    class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl py-2 hidden border border-gray-100 origin-top-right">
+                    <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-xl">
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Signed in as</p>
+                        <p class="text-sm font-medium text-gray-900 truncate" id="user-email">user@example.com</p>
+                    </div>
+                    <div class="py-1">
+                        <a href="subscription.html"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                            <i class="fas fa-credit-card w-5 text-center mr-2"></i> Manage Subscription
+                        </a>
+                    </div>
+                    <div class="border-t border-gray-100 my-1"></div>
+                    <button id="logout-btn-header"
+                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors flex items-center">
+                        <i class="fas fa-sign-out-alt w-5 text-center mr-2"></i>
+                        <span data-i18n="nav_logout">Log Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== UPSELL BANNER (shown to repeat page-pack buyers) ===== -->
+    <div id="upsell-banner" class="hidden items-center justify-between gap-3 px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-300 text-gray-900 text-sm font-medium flex-shrink-0" style="z-index:25;">
+        <span id="upsell-banner-text">
+            You've bought multiple page packs — a Pro subscription gives unlimited scans for less.
+        </span>
+        <div class="flex items-center gap-2 flex-shrink-0">
+            <a id="upsell-banner-cta" href="pricing.html" class="bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-700 transition whitespace-nowrap">
+                Upgrade to Pro
+            </a>
+            <button id="upsell-banner-dismiss" class="text-gray-700 hover:text-gray-900 text-lg leading-none" aria-label="Dismiss">&times;</button>
+        </div>
+    </div>
+
+    <!-- ===== MAIN BODY AREA ===== -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- ===== SIDEBAR (Desktop) ===== -->
+        <aside class="w-56 bg-gray-900 z-20 hidden md:flex flex-col flex-shrink-0"
+               style="background-color:#0f172a;">
+
+            <!-- User status (required: aside > .p-4.border-b for JS badge injection) -->
+            <div class="p-4 border-b border-slate-800">
+                <div id="user-status-display"
+                    style="display:none"
+                    class="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-400 w-full justify-center">
+                    Demo User
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+                <a href="#" id="link-new-scan" class="sidebar-nav-item active">
+                    <i class="fas fa-magic"></i>
+                    <span data-i18n="side_new">New Scan</span>
+                </a>
+
+
+                <a href="#" id="link-history" class="sidebar-nav-item">
+                    <i class="fas fa-history"></i>
+                    <span data-i18n="side_history">History</span>
+                </a>
+
+                <a href="pdf-studio.html" class="sidebar-nav-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF Studio</span>
+                </a>
+
+                <a href="subscription.html" id="manage-sub-link-sidebar" class="sidebar-nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span data-i18n="side_manage">Manage Subscription</span>
+                </a>
+
+                <div class="pt-2">
+                    <a href="pricing.html" class="sidebar-credits-btn">
+                        <i class="fas fa-coins"></i>
+                        <span>Buy OCR Credits</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Logout at bottom -->
+            <div class="p-3 border-t border-slate-800">
+                <button id="logout-btn-sidebar" class="sidebar-nav-item text-red-400 hover:text-red-300 w-full"
+                    style="hover:background:rgba(239,68,68,0.1);">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span data-i18n="nav_logout">Log Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="flex-1 flex flex-col relative overflow-hidden" style="background-color:#f8fafc;">
+
+            <!-- Wizard View -->
+            <div id="wizard-view" class="flex-1 overflow-y-auto p-4 md:p-6" style="display:flex; flex-direction:column;">
+                <div class="max-w-5xl mx-auto h-full flex flex-col w-full">
+
+                    <!-- Step Progress Indicators -->
+                    <div class="flex-shrink-0 mb-6 flex justify-center">
+                        <div class="flex items-center gap-2">
+                            <!-- Step 1 -->
+                            <div class="flex items-center gap-2">
+                                <div id="step1-indicator"
+                                    class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-blue-100">
+                                    1
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 hidden sm:inline" data-i18n="step_upload">Upload</span>
+                            </div>
+                            <div class="step-connector"></div>
+                            <!-- Step 2 -->
+                            <div class="flex items-center gap-2">
+                                <div id="step2-indicator"
+                                    class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs">
+                                    2
+                                </div>
+                                <span class="text-sm font-medium text-gray-400 hidden sm:inline" data-i18n="step_processing">Processing</span>
+                            </div>
+                            <div class="step-connector"></div>
+                            <!-- Step 3 -->
+                            <div class="flex items-center gap-2">
+                                <div id="step3-indicator"
+                                    class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs">
+                                    3
+                                </div>
+                                <span class="text-sm font-medium text-gray-400 hidden sm:inline" data-i18n="step_result">Result</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 1: UPLOAD ===== -->
+                    <div id="step-upload" class="wizard-step flex-1 flex flex-col justify-center">
+
+                        <!-- Hero Text -->
+                        <div class="text-center mb-8 max-w-xl mx-auto">
+                            <h2 class="text-2xl font-bold text-blue-600 mb-2" data-i18n="app_rank">
+                                Arabic #1 App for Handwriting Support
+                            </h2>
+                            <p class="text-gray-600 font-medium mb-1" data-i18n="upload_tagline">
+                                Use advanced Arabic OCR to scan images, PDFs, and handwriting with high precision.
+                            </p>
+                            <p class="text-gray-400 text-sm" data-i18n="upload_subtag">
+                                Perfect for students, professionals, journalists, and researchers.
+                            </p>
+                            <div id="tier-status-line" class="mt-3"></div>
+                        </div>
+
+                        <!-- Drop Zone -->
+                        <div id="drop-zone"
+                            class="mx-auto w-full max-w-2xl p-10 md:p-14 text-center cursor-pointer group relative overflow-hidden">
+
+                            <!-- Upload Icon -->
+                            <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:scale-105 transition">
+                                <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2" data-i18n="upload_drop">Drop your files here</h3>
+                            <p class="text-gray-400 text-sm mb-7" data-i18n="upload_support">
+                                Support for Images (JPG, PNG) and PDF Documents
+                            </p>
+                            <button
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-xl transition shadow-md hover:shadow-blue-500/25 text-sm"
+                                data-i18n="upload_browse">
+                                Browse Files
+                            </button>
+                            <input type="file" id="file-input" class="hidden" accept="image/*,.pdf" />
+                        </div>
+
+                    </div>
+
+                    <!-- ===== STEP 2: PROCESSING ===== -->
+                    <div id="step-processing" class="wizard-step hidden h-full">
+                        <div class="h-full flex flex-col items-center justify-center text-center py-16">
+                            <!-- Spinner -->
+                            <div class="mb-8 relative w-20 h-20">
+                                <div class="absolute inset-0 rounded-full border-4 border-blue-100"></div>
+                                <div class="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
+                                <div class="absolute inset-0 flex items-center justify-center text-blue-600">
+                                    <i class="fas fa-magic text-xl"></i>
+                                </div>
+                            </div>
+
+                            <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="proc_title">Processing...</h2>
+                            <p class="text-gray-400 max-w-xs mb-8 text-sm" data-i18n="proc_desc">Extracting text and identifying layout.</p>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full max-w-sm bg-gray-100 rounded-full h-2.5 overflow-hidden border border-gray-200">
+                                <div id="ocr-progress-bar"
+                                    class="progress-shimmer h-full rounded-full transition-all duration-300"
+                                    style="width: 0%">
+                                </div>
+                            </div>
+                            <p id="ocr-progress-text" class="text-blue-600 font-bold mt-3 text-lg font-mono">0%</p>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 3: RESULT ===== -->
+                    <div id="step-result"
+                        class="wizard-step hidden flex-1 flex flex-col h-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 relative">
+
+                        <!-- Result Loading Overlay -->
+                        <div id="result-loading-overlay"
+                            class="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden text-white">
+                            <div class="relative w-20 h-20 mb-5">
+                                <div class="absolute inset-0 rounded-full border-4 border-gray-600"></div>
+                                <div class="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+                            </div>
+                            <h3 class="text-lg font-bold text-white">Processing...</h3>
+                            <p class="text-gray-400 text-sm mt-1">Extracting text from image</p>
+                            <div class="w-44 bg-gray-700 rounded-full h-1.5 mt-4 overflow-hidden">
+                                <div id="ocr-progress-bar-result"
+                                    class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                                    style="width: 0%">
+                                </div>
+                            </div>
+                            <p id="ocr-progress-text-result" class="text-xs text-gray-500 mt-2 font-mono">0%</p>
+                        </div>
+
+                        <!-- Toolbar -->
+                        <div class="h-12 border-b border-gray-100 bg-gray-50 flex items-center justify-between px-3 flex-shrink-0">
+                            <!-- Left: Back + Filename -->
+                            <div class="flex items-center gap-2 min-w-0">
+                                <button id="btn-back"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition flex-shrink-0">
+                                    <i class="fas fa-arrow-left text-sm"></i>
+                                </button>
+                                <span class="font-medium text-gray-700 text-sm truncate" id="filename-display">Document.jpg</span>
+                            </div>
+
+                            <!-- Right: Action buttons -->
+                            <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                                <button id="btn-new-scan"
+                                    class="pill-btn bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200">
+                                    <i class="fas fa-redo text-xs"></i>
+                                    <span class="hidden sm:inline" data-i18n="res_new">New Scan</span>
+                                </button>
+                                <button id="btn-refine"
+                                    class="pill-btn bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200">
+                                    <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                                    <span class="hidden sm:inline">AI Refine</span>
+                                </button>
+                                <button id="btn-summarize"
+                                    class="pill-btn bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200">
+                                    <i class="fas fa-magic text-xs"></i>
+                                    <span class="hidden sm:inline" data-i18n="res_summarize">Summarize</span>
+                                </button>
+                                <button id="btn-translate"
+                                    class="pill-btn bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
+                                    <i class="fas fa-language text-xs"></i>
+                                    <span class="hidden sm:inline" data-i18n="res_translate">Translate</span>
+                                </button>
+
+                                <div class="w-px h-5 bg-gray-200 mx-1"></div>
+
+                                <button id="btn-copy"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                    title="Copy Text">
+                                    <i class="fas fa-copy text-sm"></i>
+                                </button>
+                                <button id="btn-download"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                    title="Download">
+                                    <i class="fas fa-download text-sm"></i>
+                                </button>
+                                <button id="btn-print"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                    title="Print">
+                                    <i class="fas fa-print text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stats bar placeholder -->
+                        <div id="ocr-stats-bar-placeholder"></div>
+
+                        <!-- Editor + Image area -->
+                        <div class="flex-1 flex overflow-hidden flex-col">
+
+                            <!-- Tab row -->
+                            <div class="flex border-b border-gray-100 overflow-x-auto flex-shrink-0 bg-white">
+                                <button class="result-tab active-tab" id="tab-original" data-i18n="tab_original">
+                                    <i class="fas fa-file-alt mr-1.5"></i>Original Text
+                                </button>
+                                <button class="result-tab hidden" id="tab-refine" disabled data-i18n="tab_refine">
+                                    <i class="fas fa-wand-magic-sparkles mr-1.5"></i>AI Refine
+                                </button>
+                                <button class="result-tab hidden" id="tab-summary" disabled data-i18n="tab_summary">
+                                    <i class="fas fa-magic mr-1.5"></i>Summary
+                                </button>
+                                <button class="result-tab hidden" id="tab-translation" disabled data-i18n="tab_translation">
+                                    <i class="fas fa-language mr-1.5"></i>Translation
+                                </button>
+                                <button class="result-tab" id="tab-image-viewer">
+                                    <i class="fas fa-image mr-1.5"></i>Image Viewer
+                                </button>
+                            </div>
+
+                            <!-- Editor + Image Viewer wrapper -->
+                            <div class="relative flex-1 flex flex-col overflow-hidden">
+                                <!-- Quill editor -->
+                                <div id="editor-container"></div>
+
+                                <!-- Image Viewer (hidden by default) -->
+                                <div id="image-viewer-container"
+                                    class="hidden absolute inset-0 bg-gray-100 flex items-center justify-center p-4 overflow-auto">
+                                    <img id="result-source-image" src=""
+                                        class="max-w-full max-h-full shadow-lg rounded-lg"
+                                        style="object-fit: contain;" loading="lazy" decoding="async" />
+                                </div>
+                            </div>
+
+                            <!-- Floating actions row -->
+                            <div class="absolute bottom-4 left-4 z-10 flex items-center gap-2">
+                                <button id="btn-copy-floating"
+                                    class="bg-white/90 backdrop-blur shadow-md border border-gray-200 px-3 py-1.5 rounded-full text-blue-600 font-medium text-xs hover:bg-blue-50 transition flex items-center gap-1.5">
+                                    <i class="fas fa-copy"></i>
+                                    <span data-i18n="res_copy">Copy Result</span>
+                                </button>
+
+                                <!-- OCR Stats -->
+                                <div id="ocr-stats-bar"
+                                    class="hidden bg-white/90 backdrop-blur shadow-md border border-gray-200 px-3 py-1.5 rounded-full text-xs flex items-center gap-3 text-gray-600">
+                                    <span class="flex items-center gap-1" title="Word Count">
+                                        <i class="fas fa-font text-emerald-500"></i>
+                                        <span class="font-semibold">Words:</span>
+                                        <span id="stat-words" class="text-emerald-700 font-mono">--</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden source image for JS -->
+                        <img id="source-image" src="" class="hidden" loading="lazy" decoding="async" />
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== HISTORY VIEW ===== -->
+            <div id="history-view" class="hidden flex-1 overflow-y-auto p-4 md:p-6" style="background-color:#f8fafc;">
+                <div class="max-w-5xl mx-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800" data-i18n="hist_title">Scan History</h2>
+                            <p class="text-gray-400 text-sm mt-0.5" data-i18n="hist_desc">Your recent documents are saved locally in your browser.</p>
+                        </div>
+                        <button id="clear-history-btn"
+                            class="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition text-sm font-medium border border-transparent hover:border-red-100">
+                            <i class="fas fa-trash-alt"></i>
+                            <span data-i18n="hist_clear">Clear History</span>
+                        </button>
+                    </div>
+
+                    <!-- History Grid -->
+                    <div id="history-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="col-span-full text-center py-16 text-gray-400">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-history text-2xl text-gray-300"></i>
+                            </div>
+                            <p class="font-medium" data-i18n="hist_empty">No history found.</p>
+                            <p class="text-sm mt-1 text-gray-300">Scanned documents will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== MOBILE BOTTOM NAVIGATION ===== -->
+    <nav id="mobile-bottom-nav" class="md:hidden bg-white border-t border-gray-200 z-30 flex-shrink-0">
+        <div class="flex">
+            <button class="mobile-nav-tab active" onclick="document.getElementById('link-new-scan').click()">
+                <i class="fas fa-magic"></i>
+                <span>Scan</span>
+            </button>
+            <button class="mobile-nav-tab" onclick="document.getElementById('link-history').click()">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </button>
+            <a href="pricing.html" class="mobile-nav-tab" style="text-decoration:none;">
+                <i class="fas fa-coins" style="color:#f59e0b;"></i>
+                <span style="color:#f59e0b;">Credits</span>
+            </a>
+            <button class="mobile-nav-tab" onclick="document.getElementById('user-menu-btn').click()">
+                <i class="fas fa-user-circle"></i>
+                <span>Account</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== PRICING MODAL ===== -->
+    <div id="pricing-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden p-6 relative">
+            <button id="close-pricing" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-crown text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900" data-i18n="modal_title">Upgrade to Pro</h2>
+                <p class="text-gray-500 mt-2 text-sm" data-i18n="modal_desc">Unlock unlimited PDF OCR, Summaries, and Translations.</p>
+            </div>
+
+            <div class="space-y-3 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    </div>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat1">Unlimited PDF Pages processing</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    </div>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat2">AI Summarization (GPT-4)</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    </div>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat3">Instant Translation to 50+ languages</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    </div>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat4">Priority Processing Speed</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <!-- Monthly -->
+                <div id="plan-monthly"
+                    class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-400 transition relative">
+                    <div class="text-center">
+                        <h3 class="font-bold text-gray-700 text-sm" data-i18n="modal_monthly">Monthly</h3>
+                        <div class="text-2xl font-bold text-blue-600 my-1">$4.99</div>
+                        <span class="text-xs text-gray-400">/month</span>
+                    </div>
+                    <div class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-blue-600 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Yearly -->
+                <div id="plan-yearly"
+                    class="border-2 border-blue-600 bg-blue-50 rounded-xl p-4 cursor-pointer relative shadow-sm">
+                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        data-i18n="modal_save">
+                        SAVE 33%
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-bold text-gray-800 text-sm" data-i18n="modal_yearly">Yearly</h3>
+                        <div class="text-2xl font-bold text-blue-600 my-1">$39.99</div>
+                        <span class="text-xs text-gray-500">/year</span>
+                    </div>
+                    <div class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-blue-600 flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-subscribe"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition hover:-translate-y-0.5 transform text-sm"
+                data-i18n="modal_continue">
+                Continue to Checkout
+            </button>
+            <p class="text-xs text-gray-400 text-center mt-3" data-i18n="modal_secure">
+                Secure payment via Paddle. Cancel anytime.
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== PDF SELECTION MODAL ===== -->
+    <div id="pdf-selection-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden relative">
+
+            <!-- Header -->
+            <div class="px-6 py-4 border-b flex items-center justify-between bg-gray-50 flex-shrink-0">
+                <h3 class="text-lg font-bold text-gray-800">Select Page to Scan</h3>
+                <button id="close-pdf-modal" class="text-gray-400 hover:text-gray-600 transition p-1.5 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Pages Grid -->
+            <div id="pdf-pages-grid"
+                class="flex-1 overflow-y-auto p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gray-50">
+                <div class="col-span-full text-center text-gray-500 py-10">
+                    <i class="fas fa-circle-notch fa-spin text-3xl text-blue-600 mb-3"></i>
+                    <p>Loading PDF Pages...</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t bg-white flex items-center justify-between flex-shrink-0">
+                <span class="text-sm text-gray-400">Select a specific page to process</span>
+                <button id="cancel-pdf-selection"
+                    class="px-4 py-2 text-sm text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition border border-gray-200">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TRANSLATION MODAL ===== -->
+    <div id="translation-modal"
+        class="fixed inset-0 bg-black/50 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4" data-i18n="modal_trans_title">Select Target Language</h3>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-600 mb-2" data-i18n="modal_trans_label">Language</label>
+                <select id="translation-lang-select"
+                    class="w-full border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50 text-sm">
+                    <option value="English">English</option>
+                    <option value="French">French</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="German">German</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Turkish">Turkish</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Arabic">Arabic</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button id="btn-cancel-translation"
+                    class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium"
+                    data-i18n="modal_trans_cancel">Cancel</button>
+                <button id="btn-confirm-translation"
+                    class="px-4 py-2 text-sm bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md"
+                    data-i18n="modal_trans_confirm">Translate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <script>
+        // --- TRANSLATIONS ---
+        const translations = {
+            en: {
+                app_title: "Arabic OCR",
+                nav_home: "Home",
+                nav_features: "Features",
+                nav_contact: "Contact",
+                nav_logout: "Log Out",
+
+                side_new: "New Scan",
+                side_history: "History",
+                side_settings: "Settings",
+                side_free: "Free Plan",
+                side_upgrade: "Upgrade to Pro ⚡",
+                side_manage: "Manage Subscription",
+
+                step_upload: "Upload",
+                step_processing: "Processing",
+                step_result: "Result",
+
+                upload_drop: "Drop your files here",
+                upload_support: "Support for Images (JPG, PNG) and PDF Documents",
+                upload_browse: "Browse Files",
+                app_rank: "Arabic #1 App for Handwriting Support",
+                upload_tagline: "Use advanced Arabic OCR to scan images, PDFs, and handwriting with high precision.",
+                upload_subtag: "Perfect for students, professionals, journalists, and researchers.",
+
+                proc_title: "Processing...",
+                proc_desc: "Extracting text and identifying layout.",
+
+                res_filename: "Document.jpg",
+                res_new: "New Scan",
+                res_summarize: "Summarize",
+                res_translate: "Translate",
+                res_copy: "Copy Result",
+
+                tab_original: "Original Text",
+                tab_refine: "AI Refine",
+                tab_summary: "Summary",
+                tab_translation: "Translation",
+                text_placeholder: "Extracted text will appear here...",
+
+                hist_title: "Scan History",
+                hist_desc: "Your recent documents are saved locally in your browser.",
+                hist_clear: "Clear History",
+                hist_empty: "No history found.",
+
+                footer_rights: "© 2026 Kanzati – Ziad Khazzaka & Co. Arabic OCR. All rights reserved.",
+                footer_terms: "Terms of Use",
+                footer_privacy: "Privacy Policy",
+
+                modal_title: "Upgrade to Pro",
+                modal_desc: "Unlock unlimited PDF OCR, Summaries, and Translations.",
+                modal_feat1: "Unlimited PDF Pages processing",
+                modal_feat2: "AI Summarization (GPT-4)",
+                modal_feat3: "Instant Translation to 50+ languages",
+                modal_feat4: "Priority Processing Speed",
+                modal_monthly: "Monthly",
+                modal_yearly: "Yearly",
+                modal_save: "SAVE 33%",
+                modal_continue: "Continue to Checkout",
+                modal_secure: "Secure payment via Paddle. Cancel anytime.",
+
+                modal_trans_title: "Select Target Language",
+                modal_trans_label: "Language",
+                modal_trans_cancel: "Cancel",
+                modal_trans_confirm: "Translate"
+            },
+            ar: {
+                app_title: "الماسح الضوئي العربي",
+                nav_home: "الرئيسية",
+                nav_features: "المميزات",
+                nav_contact: "اتصل بنا",
+                nav_logout: "تسجيل خروج",
+
+                side_new: "مسح جديد",
+                side_history: "السجل",
+                side_settings: "الإعدادات",
+                side_free: "الخطة المجانية",
+                side_upgrade: "ترقية إلى المحترف ⚡",
+                side_manage: "إدارة الاشتراك",
+
+                step_upload: "رفع ملف",
+                step_processing: "معالجة",
+                step_result: "النتيجة",
+
+                upload_drop: "أفلت ملفاتك هنا",
+                upload_support: "دعم للصور (JPG, PNG) وملفات PDF",
+                upload_browse: "تصفح الملفات",
+                app_rank: "التطبيق العربي الأول لدعم الكتابة اليدوية",
+                upload_tagline: "استخدم تقنية OCR المتقدمة لاستخراج النصوص من الصور والملفات بدقة عالية.",
+                upload_subtag: "مثالي للطلاب، المحترفين، الصحفيين، والباحثين.",
+
+                proc_title: "جاري المعالجة...",
+                proc_desc: "يتم استخراج النص والتعرف على التنسيق.",
+
+                res_filename: "ملف.jpg",
+                res_new: "مسح جديد",
+                res_summarize: "تلخيص",
+                res_translate: "ترجمة",
+                res_copy: "نسخ النص",
+
+                tab_original: "النص الأصلي",
+                tab_refine: "تحسين بالذكاء الاصطناعي",
+                tab_summary: "الملخص",
+                tab_translation: "الترجمة",
+                text_placeholder: "النص المستخرج سيظهر هنا...",
+
+                hist_title: "سجل المسح",
+                hist_desc: "مستنداتك الأخيرة محفوظة محلياً في المتصفح.",
+                hist_clear: "محو السجل",
+                hist_empty: "لا يوجد سجل.",
+
+                footer_rights: "© 2026 Kanzati – Ziad Khazzaka & Co. Arabic OCR. جميع الحقوق محفوظة.",
+                footer_terms: "شروط الاستخدام",
+                footer_privacy: "سياسة الخصوصية",
+
+                modal_title: "ترقية إلى المحترف",
+                modal_desc: "افتح ميزات غير محدودة: PDF OCR، تلخيص، وترجمة.",
+                modal_feat1: "معالجة عدد غير محدود من صفحات PDF",
+                modal_feat2: "تلخيص ذكي (GPT-4)",
+                modal_feat3: "ترجمة فورية لأكثر من 50 لغة",
+                modal_feat4: "أولوية في سرعة المعالجة",
+                modal_monthly: "شهري",
+                modal_yearly: "سنوي",
+                modal_save: "وفر 33%",
+                modal_continue: "متابعة للدفع",
+                modal_secure: "دفع آمن عبر Paddle. يمكنك الإلغاء في أي وقت.",
+
+                modal_trans_title: "اختر لغة الهدف",
+                modal_trans_label: "اللغة",
+                modal_trans_cancel: "إلغاء",
+                modal_trans_confirm: "ترجمة"
+            }
+        };
+
+        // --- DARK MODE LOGIC ---
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const toggleBtnMobile = document.getElementById('dark-mode-toggle-mobile');
+        const body = document.body;
+
+        function updateIcons(isDark) {
+            const desktopMoon = document.getElementById('icon-moon-desktop');
+            const desktopSun = document.getElementById('icon-sun-desktop');
+            const mobileMoon = document.getElementById('icon-moon-mobile');
+            const mobileSun = document.getElementById('icon-sun-mobile');
+
+            if (isDark) {
+                if (desktopMoon) desktopMoon.classList.add('hidden');
+                if (desktopSun) desktopSun.classList.remove('hidden');
+                if (mobileMoon) mobileMoon.classList.add('hidden');
+                if (mobileSun) mobileSun.classList.remove('hidden');
+            } else {
+                if (desktopMoon) desktopMoon.classList.remove('hidden');
+                if (desktopSun) desktopSun.classList.add('hidden');
+                if (mobileMoon) mobileMoon.classList.remove('hidden');
+                if (mobileSun) mobileSun.classList.add('hidden');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            updateIcons(true);
+        } else {
+            updateIcons(false);
+        }
+
+        function toggleTheme() {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateIcons(isDark);
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', toggleTheme);
+        if (toggleBtnMobile) toggleBtnMobile.addEventListener('click', toggleTheme);
+
+        // --- LANGUAGE LOGIC ---
+        const langToggle = document.getElementById('lang-toggle');
+        const langToggleMobile = document.getElementById('lang-toggle-mobile');
+        const langLabelDesktop = document.getElementById('lang-label-desktop');
+        const langLabelMobile = document.getElementById('lang-label-mobile');
+
+        let currentLang = localStorage.getItem('lang') || 'en';
+
+        function updateLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+            // Update Toggle Labels
+            if (lang === 'ar') {
+                if (langLabelDesktop) langLabelDesktop.textContent = "EN";
+                if (langLabelMobile) langLabelMobile.textContent = "EN";
+            } else {
+                if (langLabelDesktop) langLabelDesktop.textContent = "عربي";
+                if (langLabelMobile) langLabelMobile.textContent = "ع";
+            }
+
+            // Update Text Content
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = t[key];
+                    } else {
+                        const icon = el.querySelector('i');
+                        if (icon) {
+                            const iconHtml = icon.outerHTML;
+                            el.innerHTML = iconHtml + (lang === 'ar' ? ' ' + t[key] : ' ' + t[key]);
+                        } else {
+                            el.textContent = t[key];
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleLanguage() {
+            const newLang = currentLang === 'en' ? 'ar' : 'en';
+            updateLanguage(newLang);
+        }
+
+        if (langToggle) langToggle.addEventListener('click', toggleLanguage);
+        if (langToggleMobile) langToggleMobile.addEventListener('click', toggleLanguage);
+
+        // Initialize Language
+        updateLanguage(currentLang);
+    </script>
+
+    <script src="js/lib/pdf.min.js?v=3"></script>
+
+    <script>
+        // Check Paddle subscription to fix isPro flag for subscribers with 0 page credits
+        (function () {
+            function getUserEmail() {
+                const el = document.getElementById('user-email');
+                if (!el) return null;
+                const textNode = Array.from(el.childNodes)
+                    .find(n => n.nodeType === Node.TEXT_NODE);
+                const email = textNode ? textNode.textContent.trim() : el.textContent.trim();
+                return (email && email !== 'user@example.com') ? email : null;
+            }
+
+            async function checkSubscription(email) {
+                try {
+                    const resp = await fetch('check_subscription.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                    const data = await resp.json();
+                    if (data && data.isPro === true) {
+                        localStorage.setItem('isPro', 'true');
+                        window.isProUser = true;
+                    }
+                } catch (e) {
+                    console.warn('[portal-v2] Subscription check failed:', e);
+                }
+            }
+
+            var attempts = 0;
+            var poll = setInterval(function () {
+                attempts++;
+                if (typeof window.pagesBalance !== 'undefined') {
+                    clearInterval(poll);
+                    if (window.pagesBalance > 0) return; // Has page credits — already pro
+                    const email = getUserEmail();
+                    if (email) checkSubscription(email);
+                }
+                if (attempts > 100) clearInterval(poll);
+            }, 150);
+        })();
+    </script>
+
+    <script>
+        // Zero-pad the pages balance count to 3 digits (e.g. 3 → "003")
+        (function () {
+            function padCount() {
+                const el = document.getElementById('pages-balance-count');
+                if (!el) return;
+                const num = parseInt(el.textContent.trim(), 10);
+                if (!isNaN(num)) {
+                    el.textContent = String(num).padStart(3, '0');
+                }
+            }
+
+            // Watch for the badge being injected into the DOM by portal.js
+            const observer = new MutationObserver(function (mutations) {
+                for (const m of mutations) {
+                    for (const node of m.addedNodes) {
+                        if (node.id === 'pages-balance-badge' ||
+                            (node.querySelector && node.querySelector('#pages-balance-count'))) {
+                            padCount();
+                            observer.disconnect();
+                            return;
+                        }
+                    }
+                }
+                // Also check if the count span already exists
+                if (document.getElementById('pages-balance-count')) {
+                    padCount();
+                    observer.disconnect();
+                }
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        })();
+    </script>
+    <script type="module" src="js/portal.js?v=11"></script>
+
+    <!-- ===== UPSELL BANNER LOGIC ===== -->
+    <script type="module">
+        import { auth } from './firebase-analytics.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const WORKER_URL  = "https://arabicocr.zczvwz6pw7.workers.dev";
+        const DISMISS_KEY = "upsell_banner_dismissed_v1";
+
+        const banner      = document.getElementById('upsell-banner');
+        const bannerText  = document.getElementById('upsell-banner-text');
+        const bannerCta   = document.getElementById('upsell-banner-cta');
+        const dismissBtn  = document.getElementById('upsell-banner-dismiss');
+
+        dismissBtn?.addEventListener('click', () => {
+            banner.classList.add('hidden');
+            banner.classList.remove('flex');
+            sessionStorage.setItem(DISMISS_KEY, '1');
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user?.email) return;
+            if (sessionStorage.getItem(DISMISS_KEY)) return;
+
+            try {
+                const res  = await fetch(`${WORKER_URL}/suggest-upgrade`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: user.email }),
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+
+                if (data.suggest) {
+                    // Update text and CTA link with the suggested plan
+                    bannerText.textContent = data.message;
+                    const plan = data.suggested_plan === 'yearly' ? 'yearly' : 'monthly';
+                    bannerCta.href = `pricing.html#${plan}`;
+
+                    banner.classList.remove('hidden');
+                    banner.classList.add('flex');
+                }
+            } catch (_) {
+                // Silently ignore — upsell is non-critical
+            }
+        });
+    </script>
+    <script src="./web-widget/agent-widget.js" defer></script>
+
+</body>
+</html>

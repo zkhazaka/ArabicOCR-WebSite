@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is the author
+    function isAuthor(postData) {
+      return isAuthenticated() && request.auth.uid == postData.author.uid;
+    }
+    
+    // Blog Posts
+    match /blog_posts/{postId} {
+      // Anyone can read published posts
+      allow read: if resource.data.status == 'published' || isAuthenticated();
+      
+      // Only authenticated users can create posts
+      allow create: if isAuthenticated() 
+                    && request.resource.data.author.uid == request.auth.uid;
+      
+      // Only the author can update their posts
+      allow update: if isAuthor(resource.data);
+      
+      // Only the author can delete their posts
+      allow delete: if isAuthor(resource.data);
+    }
+    
+    // Blog Categories
+    match /blog_categories/{categoryId} {
+      // Anyone can read categories
+      allow read: if true;
+      
+      // Only authenticated users can manage categories
+      allow create, update, delete: if isAuthenticated();
+    }
+    
+    // Blog Comments
+    match /blog_comments/{commentId} {
+      // Anyone can read approved comments
+      allow read: if resource.data.status == 'approved' || isAuthenticated();
+      
+      // Authenticated users can create comments
+      allow create: if isAuthenticated() 
+                    && request.resource.data.author.uid == request.auth.uid;
+      
+      // Only the comment author can update their comment
+      allow update: if isAuthenticated() 
+                    && resource.data.author.uid == request.auth.uid;
+      
+      // Comment author or post author can delete comments
+      allow delete: if isAuthenticated();
+    }
+    
+    // Newsletter Subscribers
+    match /newsletter_subscribers/{subscriberId} {
+      // Only authenticated users can read subscribers
+      allow read: if isAuthenticated();
+
+      // Anyone can subscribe
+      allow create: if true;
+
+      // Only authenticated users can update/delete
+      allow update, delete: if isAuthenticated();
+    }
+
+    // User profiles & OCR pages balance
+    match /users/{uid} {
+      // Users can only read their own document
+      allow read: if isAuthenticated() && request.auth.uid == uid;
+
+      // Users can create their own document
+      allow create: if isAuthenticated() && request.auth.uid == uid;
+
+      // Users can update their own document:
+      // - ocrPagesBalance can only DECREASE (OCR usage)
+      // - freeScansUsed can only INCREASE (free tier usage)
+      allow update: if isAuthenticated()
+                    && request.auth.uid == uid
+                    && (
+                      !('ocrPagesBalance' in request.resource.data)
+                      || request.resource.data.ocrPagesBalance <= resource.data.ocrPagesBalance
+                    )
+                    && (
+                      !('freeScansUsed' in request.resource.data)
+                      || request.resource.data.freeScansUsed >= resource.data.get('freeScansUsed', 0)
+                    );
+    }
+  }
+}

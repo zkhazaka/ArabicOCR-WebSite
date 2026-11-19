@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Subscription - Arabic OCR</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://arabic-ocr.com/subscription.html" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+    <!-- Navbar -->
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="portal.html" class="flex items-center space-x-2">
+                <img src="/logo.png" alt="Logo" class="w-8 h-8">
+                <span class="text-xl font-bold">Arabic OCR</span>
+            </a>
+            <a href="portal.html" class="text-blue-600 hover:text-blue-800 font-medium">
+                <i class="fas fa-arrow-left mr-1"></i> Back to Portal
+            </a>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="max-w-3xl mx-auto px-6 py-12">
+        <h1 class="text-3xl font-bold mb-8">Manage Subscription</h1>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-12">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
+            <p class="text-gray-600">Loading subscription details...</p>
+        </div>
+
+        <!-- Pages Balance Card (one-time purchase) -->
+        <div id="pages-balance-section" class="hidden bg-white p-6 rounded-xl shadow border border-purple-100 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">OCR Pages Balance</h2>
+                <span class="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded uppercase">One-Time Purchase</span>
+            </div>
+            <div class="flex items-center">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-lg mr-4">
+                    <i class="fas fa-file-alt text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl"><span id="pages-balance-count">0</span> pages remaining</h3>
+                    <p class="text-gray-500 text-sm">Pages never expire. Each OCR scan uses 1 page.</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="bg-gray-100 rounded-full h-2">
+                    <div id="pages-progress-bar" class="bg-purple-500 h-2 rounded-full transition-all" style="width:0%"></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-1"><span id="pages-used-count">0</span> of <span id="pages-total-count">1000</span> pages used</p>
+            </div>
+            <div class="mt-4">
+                <a href="pricing.html" class="inline-block bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium hover:bg-purple-600 hover:text-white transition text-sm">
+                    <i class="fas fa-plus mr-1"></i> Buy More Pages
+                </a>
+            </div>
+        </div>
+
+        <!-- No Subscription / Error -->
+        <div id="no-sub" class="hidden bg-white p-8 rounded-xl shadow border border-gray-100 text-center">
+            <i class="fas fa-exclamation-circle text-4xl text-gray-300 mb-4"></i>
+            <h2 class="text-xl font-semibold mb-2">No Active Pro Subscription Found</h2>
+            <p class="text-gray-500 mb-6">It looks like you don't have an active Pro subscription associated with this
+                account.</p>
+            <a href="pricing.html"
+                class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition">View
+                Plans</a>
+        </div>
+
+        <!-- Subscription Details -->
+        <div id="sub-details" class="hidden space-y-6">
+
+            <!-- Status Card -->
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Current Plan</h2>
+                    <span id="plan-status-badge"
+                        class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded uppercase">ACTIVE</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-lg mr-4">
+                        <i class="fas fa-crown text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 id="plan-name" class="font-bold text-xl">Pro Plan</h3>
+                        <p id="plan-desc" class="text-gray-500 text-sm">Next billing date: <span
+                                id="next-billing-date">...</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Info -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Payment Method -->
+                <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+                    <h2 class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-3">Payment Method</h2>
+                    <div class="flex items-center">
+                        <i class="far fa-credit-card text-gray-400 text-2xl mr-3"></i>
+                        <div>
+                            <p id="payment-method" class="font-semibold text-gray-800">...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Payment -->
+                <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+                    <h2 class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-3">Last Payment</h2>
+                    <div class="flex items-center">
+                        <i class="fas fa-receipt text-gray-400 text-2xl mr-3"></i>
+                        <div>
+                            <p id="last-amount" class="font-semibold text-gray-800">...</p>
+                            <p id="last-date" class="text-xs text-gray-400 mb-1">...</p>
+                            <p class="text-xs text-gray-400">Invoice #: <span id="invoice-id"
+                                    class="font-mono text-gray-600">...</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="mt-12 border-t pt-8">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Manage Status</h3>
+                <div class="bg-red-50 border border-red-100 rounded-xl p-6 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-red-800 font-bold">Cancel Subscription</h4>
+                        <p class="text-red-600 text-sm mt-1">Cancel your auto-renewal. Access continues until the end of
+                            billing period.</p>
+                    </div>
+                    <button id="btn-cancel-sub"
+                        class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-50 transition shadow-sm">
+                        Cancel Subscription
+                    </button>
+                </div>
+            </div>
+
+            <!-- support info -->
+            <div class="text-center text-sm text-gray-500 mt-8">
+                <p>Need help? <a href="contact.html" class="text-blue-600 hover:underline">Contact Support</a>.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+                    <!-- FOOTER -->
+    <footer class="bg-yellow-300 border-t border-yellow-400 py-12">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-5 gap-8">
+            <div class="col-span-2">
+                <div class="flex items-center space-x-3 mb-6">
+                    <img src="/logo.png" alt="Logo" class="w-8 h-8">
+                    <span
+                        class="text-xl font-bold text-gray-900">Arabic
+                        OCR</span>
+                </div>
+                <p class="text-gray-800 max-w-sm mb-6">The leading platform for Arabic text recognition and document
+                    processing. Empowering users with AI-driven insights.</p>
+                <div class="mb-6 mr-8">
+                    <h4 class="font-bold text-gray-900 mb-2">Newsletter</h4>
+                    <form class="flex text-sm">
+                        <input type="email" placeholder="Enter your email" class="px-4 py-2 border border-yellow-400 rounded-l-lg focus:outline-none focus:border-gray-900 flex-grow" required>
+                        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-r-lg hover:bg-gray-800 transition">Subscribe</button>
+                    </form>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-700 hover:text-gray-900 text-xl transition"><i
+                            class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 text-xl transition"><i
+                            class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 text-xl transition"><i
+                            class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold text-gray-900 mb-6">Quick Links</h4>
+                <ul class="space-y-4 text-gray-800 font-medium">
+                    <li><a href="index.html" class="hover:text-gray-600 transition">Home</a></li>
+                    <li><a href="portal.html" class="hover:text-gray-600 transition">Web Portal</a></li>
+                    <li><a href="pdf-studio.html" class="hover:text-gray-600 transition">PDF Studio</a></li>
+                    <li><a href="pricing.html" class="hover:text-gray-600 transition">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold text-gray-900 mb-6">Resources</h4>
+                <ul class="space-y-4 text-gray-800 font-medium">
+                    <li><a href="about.html" class="hover:text-gray-600 transition">About Us</a></li>
+                    <li><a href="contact.html" class="hover:text-gray-600 transition">Contact</a></li>
+                    <li><a href="blog.html" class="hover:text-gray-600 transition">Blog</a></li>
+                    <li><a href="ultimate-guide-arabic-ocr.html" class="hover:text-gray-600 transition">Guide</a></li>
+                    <li><a href="terms.html" class="hover:text-gray-600 transition">Terms of Use</a></li>
+                    <li><a href="privacy.html" class="hover:text-gray-600 transition">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold text-gray-900 mb-6">More Apps</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <span class="text-gray-900 font-bold">Wand Desktop</span>
+                        <a href="https://apps.apple.com/us/app/wand-desktop/id6757389093" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>Mac</a>
+                    </li>
+                    <li class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <span class="text-gray-900 font-bold">Luna AI</span>
+                        <a href="https://apple.co/4eVku6p" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://play.google.com/store/apps/details?id=com.kanzati.lunaai" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-android mr-0.5"></i>Android</a>
+                    </li>
+                    <li class="flex items-center gap-x-2">
+                        <span class="text-gray-900 font-bold">Arabic OCR</span>
+                        <a href="https://apps.apple.com/us/app/arabic-ocr/id6745792738" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://play.google.com/store/apps/details?id=com.kanzati.arabicocr" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-android mr-0.5"></i>Android</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://apps.microsoft.com/detail/9P2NRS4S8ND6?hl=en-us&amp;gl=US&amp;ocid=pdpshare" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-windows mr-0.5"></i>Windows</a>
+                    </li>
+                    <li class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <span class="text-gray-900 font-bold">SQL Dump</span>
+                        <a href="https://apps.apple.com/us/app/sql-dump/id6744847226" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                    </li>
+                    <li class="flex items-center gap-x-2">
+                        <span class="text-gray-900 font-bold">Fake Voice</span>
+                        <a href="https://apps.apple.com/us/app/fake-voice-%D8%A7%D8%B3%D8%AA%D9%86%D8%B3%D8%A7%D8%AE-%D8%A7%D9%84%D8%B5%D9%88%D8%AA/id6740585303" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://play.google.com/store/apps/details?id=com.kanzati.fakevoice" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-android mr-0.5"></i>Android</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://apps.microsoft.com/detail/9NSPC75M8L0T?hl=en-us&amp;gl=US" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-windows mr-0.5"></i>Windows</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 border-t border-yellow-400 mt-12 pt-8 text-center text-gray-600 text-sm font-medium">
+            <p>&copy; 2026 Arabic OCR - Ziad Khazzaka & Co. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/subscription.js"></script>
+</body>
+
+</html>

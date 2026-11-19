@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic OCR - PDF Studio & Editor Online</title>    <!-- Open Graph / Twitter (added for link previews; mirrors title/description above) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Arabic OCR" />
+    <meta property="og:title" content="Arabic OCR - PDF Studio & Editor Online" />
+    <meta property="og:description" content="Advanced Online PDF Studio. Edit, Merge, Organize, and Extract text from PDF files directly in your browser. No installation required. | استوديو PDF متطور: تعديل، دمج، واستخراج النصوص من ملفات PDF مباشرة في المتصفح." />
+    <meta property="og:url" content="https://arabic-ocr.com/pdf-studio.html" />
+    <meta property="og:image" content="https://arabic-ocr.com/icon.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Arabic OCR - PDF Studio & Editor Online" />
+    <meta name="twitter:description" content="Advanced Online PDF Studio. Edit, Merge, Organize, and Extract text from PDF files directly in your browser. No installation required. | استوديو PDF متطور: تعديل، دمج، واستخراج النصوص من ملفات PDF مباشرة في المتصفح." />
+    <meta name="twitter:image" content="https://arabic-ocr.com/icon.jpg" />
+    <link rel="canonical" href="https://arabic-ocr.com/pdf-studio.html" />
+    <meta name="description"
+        content="Advanced Online PDF Studio. Edit, Merge, Organize, and Extract text from PDF files directly in your browser. No installation required. | استوديو PDF متطور: تعديل، دمج، واستخراج النصوص من ملفات PDF مباشرة في المتصفح." />
+    <meta name="keywords"
+        content="pdf studio, pdf editor, merge pdf, rotate pdf, delete pdf pages, online pdf tools, pdf organizer, ocr pdf, محرر PDF, تعديل ملفات بي دي اف, دمج ملفات, أدوات PDF, تدوير صفحات" />
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com; 
+                 script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.firebaseio.com https://*.google-analytics.com https://*.googletagmanager.com https://cdn.paddle.com https://sandbox-cdn.paddle.com https://googleads.g.doubleclick.net https://public.profitwell.com https://cdn.quilljs.com https://cdn.jsdelivr.net; 
+                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.quilljs.com https://cdn.paddle.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://sandbox-cdn.paddle.com; 
+                 font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; 
+                 img-src 'self' data: blob: https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com https://www.google.com.lb; 
+                 connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://secure.paddle.com https://sandbox-secure.paddle.com https://v2.paddlejs.com https://www.google.com https://cdn.paddle.com https://cdn.jsdelivr.net https://www.gstatic.com https://arabicocr.zczvwz6pw7.workers.dev;
+                 frame-src 'self' https://*.google.com https://*.firebaseapp.com https://*.googletagmanager.com https://www.googletagmanager.com https://buy.paddle.com https://sandbox-buy.paddle.com https://googleads.g.doubleclick.net;">
+    <script>window.global = window;</script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- PDF Libraries -->
+    <script src="js/lib/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/lib/pdf.worker.min.js';
+    </script>
+    <script src="js/lib/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        #pdf-render-container {
+            overflow: auto;
+            position: relative;
+            background-color: #525659;
+            box-shadow: inset 0 0 20px #000000;
+        }
+
+        .pdf-page-container {
+            position: relative;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background-color: white;
+        }
+
+        .thumbnail-page {
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .thumbnail-page.active {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        .thumbnail-page.dragging {
+            opacity: 0.5;
+            transform: scale(0.9);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .thumbnail-drop-indicator {
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 2px;
+            margin: 4px 0;
+            width: 100%;
+        }
+
+        .toolbar-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            line-height: 1rem;
+            color: #4b5563;
+            border-radius: 0.5rem;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .toolbar-btn i {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Hide scrollbar for thumbnails but keep functionality */
+        #thumbnail-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #thumbnail-sidebar::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 3px;
+        }
+
+        /* Modern Tool Properties Overlay */
+        #tool-properties-overlay {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #tool-properties-overlay.show {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .color-swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.2);
+        }
+
+        .color-swatch.active {
+            border-color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        .thickness-option {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background: #f3f4f6;
+        }
+
+        .thickness-option:hover {
+            background: #e5e7eb;
+        }
+
+        .thickness-option.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .thickness-line {
+            background: currentColor;
+            border-radius: 10px;
+        }
+
+        /* Export Menu JS Toggle */
+        #export-menu.show {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translate(-50%, 0) !important;
+        }
+
+        /* Selection Box */
+        .selection-box {
+            border: 2px dashed #2563eb;
+            background-color: rgba(37, 99, 235, 0.1);
+            position: absolute;
+            z-index: 100;
+            display: none;
+            cursor: crosshair;
+            pointer-events: none;
+        }
+
+        /* Pasted Floating Image */
+        .floating-image {
+            position: absolute;
+            z-index: 40;
+            border: 1px dashed transparent;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .floating-image:hover,
+        .floating-image.selected {
+            border-color: #2563eb;
+        }
+
+        .floating-image.selected {
+            box-shadow: 0 0 0 2px #2563eb, 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Context Menu */
+        #context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 4px;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            min-width: 120px;
+        }
+
+        #context-menu button {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            color: #374151;
+            border-radius: 0.25rem;
+            transition: background 0.1s;
+        }
+
+        #context-menu button:hover {
+            background-color: #f3f4f6;
+            color: #2563eb;
+        }
+
+        /* Text Layer for PDF.js */
+        /* Text Layer for PDF.js */
+        .textLayer {
+            position: absolute;
+            left: 0;
+            top: -1px;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 0.2;
+            line-height: 1.0;
+            text-align: left;
+            pointer-events: none;
+            z-index: 5;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        .textLayer.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .textLayer span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-family: sans-serif;
+            line-height: 1.0;
+        }
+
+        /* Highlighting selection */
+        ::selection {
+            background: rgba(0, 0, 255, 0.3);
+        }
+
+        /* Action Menu (Translate/OCR) */
+        #action-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 4px;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            min-width: 140px;
+        }
+
+        #action-menu button {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            color: #374151;
+            border-radius: 0.25rem;
+            transition: background 0.1s;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        #action-menu button:hover {
+            background-color: #f3f4f6;
+            color: #2563eb;
+        }
+
+        #action-menu button i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+    </style>
+    <style>
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #111827;
+            color: #f3f4f6;
+        }
+
+        body.dark-mode header,
+        body.dark-mode aside,
+        body.dark-mode .bg-white,
+        body.dark-mode .pdf-page-container {
+            background-color: #1f2937 !important;
+            color: #f3f4f6;
+            border-color: #374151;
+        }
+
+        body.dark-mode .text-gray-800,
+        body.dark-mode .text-gray-700 {
+            color: #f3f4f6 !important;
+        }
+
+        body.dark-mode .text-gray-600,
+        body.dark-mode .text-gray-500 {
+            color: #9ca3af !important;
+        }
+
+        body.dark-mode .bg-gray-100,
+        body.dark-mode .bg-gray-50 {
+            background-color: #111827 !important;
+        }
+
+        body.dark-mode .hover\:bg-gray-50:hover,
+        body.dark-mode .hover\:bg-f3f4f6:hover {
+            background-color: #374151 !important;
+        }
+
+        /* Specific override for PDF container usually dark gray - let's keep it or adjust */
+        /* #pdf-render-container is already #525659 which is dark. */
+
+        body.dark-mode .toolbar-btn {
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .toolbar-btn:hover {
+            background-color: #374151;
+        }
+
+        body.dark-mode input[type="file"]::file-selector-button {
+            background-color: #374151;
+            color: white;
+        }
+
+        /* Adjust borders */
+        body.dark-mode .border-gray-200,
+        body.dark-mode .border-gray-300 {
+            border-color: #374151 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 h-screen flex flex-col overflow-hidden">
+
+    <!-- HEADER (Simplified for Studio) -->
+    <header class="bg-white shadow-md z-30 relative border-b border-gray-200">
+        <div class="max-w-full mx-auto px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="portal.html" class="flex items-center text-gray-500 hover:text-blue-600">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
+                <div class="h-6 w-px bg-gray-300"></div>
+                <div class="flex items-center space-x-2">
+                    <img src="/logo.png" alt="Icon" class="w-8 h-8" />
+                    <h1 class="text-xl font-bold text-gray-800">Arabic OCR - PDF Studio</h1>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- Dark Mode Toggle -->
+                <button id="dark-mode-toggle"
+                    class="p-2 text-gray-600 hover:text-blue-600 transition rounded-full hover:bg-gray-100"
+                    title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+                    <!-- Default Moon Icon (SVG) -->
+                    <svg id="icon-moon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                    <!-- Sun Icon (Hidden by default) -->
+                    <svg id="icon-sun" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                </button>
+                <!-- FAQ Button -->
+                <button onclick="document.getElementById('faq-modal').classList.remove('hidden')"
+                    class="p-2 text-gray-600 hover:text-blue-600 transition rounded-full hover:bg-gray-100"
+                    title="Help & FAQ" aria-label="Help and FAQ">
+                    <i class="fas fa-question-circle text-xl"></i>
+                </button>
+                <span id="file-name-display"
+                    class="text-sm font-medium text-gray-500 hidden md:block max-w-[200px] truncate">No file
+                    selected</span>
+
+                <!-- User Profile (Hidden by default) -->
+                <div id="user-profile-container" class="hidden relative ml-4">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 focus:outline-none">
+                        <div id="user-avatar"
+                            class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                            U
+                        </div>
+                    </button>
+                    <!-- Dropdown -->
+                    <div id="user-menu-dropdown"
+                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-100 z-50">
+                        <div class="px-4 py-2 border-b border-gray-100">
+                            <p class="text-xs text-gray-500">Signed in as</p>
+                            <p id="user-email" class="text-sm font-bold text-gray-900 truncate">user@example.com</p>
+                        </div>
+                        <a href="portal.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <i class="fas fa-columns w-5 text-gray-400"></i> Dashboard
+                        </a>
+                        <button id="logout-btn-header"
+                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                            <i class="fas fa-sign-out-alt w-5"></i> Log Out
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Login Button (Visible when logged out) -->
+                <a href="login.html?redirect=pdf-studio.html" id="login-btn-header"
+                    class="hidden bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition text-sm">
+                    Login
+                </a>
+                <input type="file" id="pdf-upload" accept=".pdf,image/*" class="hidden" />
+                <input type="file" id="pdf-merge-upload" accept=".pdf,image/*" class="hidden" multiple />
+
+                <button onclick="document.getElementById('pdf-upload').click()"
+                    class="bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-medium hover:bg-blue-100 transition flex items-center text-sm">
+                    <i class="fas fa-folder-open mr-2"></i> Open
+                </button>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN STUDIO AREA -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- Left Thumbnail Sidebar -->
+        <aside class="w-64 bg-gray-100 border-r border-gray-200 flex flex-col z-20">
+            <div class="p-4 border-b border-gray-200 bg-white">
+                <h2 class="font-bold text-gray-700 text-sm uppercase tracking-wide">Pages</h2>
+            </div>
+            <div id="thumbnail-sidebar" class="flex-1 overflow-y-auto p-4 space-y-4 text-center">
+                <div class="text-gray-400 text-sm mt-10">Open a document to view pages</div>
+            </div>
+
+            <!-- Balance / Auth Status (Sidebar Footer) -->
+            <div class="p-4 border-t border-gray-200 bg-white text-center">
+                <div id="user-status-display"
+                    class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-500">
+                    Guest
+                </div>
+                <!-- hidden placeholders kept for JS compatibility -->
+                <button id="subscribe-btn-sidebar" class="hidden"></button>
+                <button id="manage-sub-btn-sidebar" class="hidden"></button>
+                <a href="pricing.html"
+                    class="mt-3 flex items-center justify-center space-x-2 px-4 py-2 bg-yellow-400 text-yellow-900 hover:bg-yellow-500 rounded-lg font-semibold transition text-sm">
+                    <i class="fas fa-coins"></i>
+                    <span>Buy OCR Credits</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Canvas Area -->
+        <main class="flex-1 flex flex-col relative bg-gray-500 overflow-hidden">
+            <!-- Top Toolbar -->
+            <div
+                class="bg-white border-b border-gray-200 p-2 flex items-center justify-center space-x-2 shadow-sm z-10">
+                <!-- Zoom Controls -->
+                <div class="flex items-center bg-gray-100 rounded-lg p-1 mr-4">
+                    <button id="zoom-out" class="p-2 text-gray-600 hover:text-blue-600 rounded"><i
+                            class="fas fa-minus"></i></button>
+                    <span id="zoom-level" class="mx-2 text-xs font-mono w-12 text-center">100%</span>
+                    <button id="zoom-in" class="p-2 text-gray-600 hover:text-blue-600 rounded"><i
+                            class="fas fa-plus"></i></button>
+                </div>
+
+                <!-- View Mode Controls -->
+                <div class="flex items-center bg-gray-100 rounded-lg p-1 mr-4">
+                    <button id="view-single" class="p-2 text-blue-600 bg-white shadow-sm rounded mr-1"
+                        title="Single Page View">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <button id="view-double" class="p-2 text-gray-600 hover:text-blue-600 rounded"
+                        title="Double Page View">
+                        <i class="fas fa-columns"></i>
+                    </button>
+                </div>
+
+                <!-- History Controls -->
+                <div class="flex items-center bg-gray-100 rounded-lg p-1 mr-4">
+                    <button id="tool-undo"
+                        class="p-2 text-gray-600 hover:text-blue-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Undo (Ctrl+Z)">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button id="tool-redo"
+                        class="p-2 text-gray-600 hover:text-blue-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Redo (Ctrl+Y)">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+
+                <div class="w-px h-8 bg-gray-300 mx-2"></div>
+
+                <!-- Page Operations -->
+                <button class="toolbar-btn" id="tool-rotate" title="Rotate Current Page">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Rotate</span>
+                </button>
+                <button class="toolbar-btn text-red-600 hover:bg-red-50" id="tool-delete" title="Delete Current Page">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Delete</span>
+                </button>
+                <div class="w-px h-8 bg-gray-300 mx-2"></div>
+
+                <!-- Select Tool -->
+                <button class="toolbar-btn" id="tool-select" title="Rectangle Mask"
+                    onclick="selectTool('select', true)">
+                    <i class="fas fa-vector-square"></i>
+                    <span>Rect Mask</span>
+                </button>
+                <button class="toolbar-btn" id="tool-select-free" title="Freehand Mask"
+                    onclick="selectTool('select-free', true)">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Free Mask</span>
+                </button>
+
+                <!-- Annotation Tools -->
+                <button class="toolbar-btn" id="tool-text" title="Add Text/Watermark" onclick="selectTool('text')">
+                    <i class="fas fa-font"></i>
+                    <span>Text</span>
+                </button>
+                <button class="toolbar-btn" id="tool-draw" title="Draw/Sign" onclick="selectTool('draw')">
+                    <i class="fas fa-pen"></i>
+                    <span>Draw</span>
+                </button>
+                <button class="toolbar-btn" id="tool-highlight" title="Highlight" onclick="selectTool('highlight')">
+                    <i class="fas fa-highlighter"></i>
+                    <span>Highlight</span>
+                </button>
+                <button class="toolbar-btn text-green-600 hover:bg-green-50" id="tool-ocr" title="Extract Text (OCR)"
+                    onclick="extractCurrentPageOCR()">
+                    <i class="fas fa-eye"></i>
+                    <span>OCR</span>
+                </button>
+                <div class="w-px h-8 bg-gray-300 mx-2"></div>
+
+                <!-- Add PDF & Save (Moved to Toolbar) -->
+                <button
+                    class="toolbar-btn text-purple-600 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="merge-btn" title="Add File to Merge"
+                    onclick="document.getElementById('pdf-merge-upload').click()" disabled>
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add File</span>
+                </button>
+
+                <div class="w-px h-8 bg-gray-300 mx-2"></div>
+
+                <button
+                    class="toolbar-btn text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="print-btn" title="Print Document" onclick="printPDF()" disabled>
+                    <i class="fas fa-print"></i>
+                    <span>Print</span>
+                </button>
+
+                <button
+                    class="toolbar-btn text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="save-btn" title="Save Document" disabled>
+                    <i class="fas fa-save"></i>
+                    <span>Save</span>
+                </button>
+
+                <div class="w-px h-8 bg-gray-300 mx-2"></div>
+
+                <!-- Export (Dropdown) -->
+                <div class="relative" id="export-dropdown-container">
+                    <button class="toolbar-btn" id="export-btn" title="Export Options">
+                        <i class="fas fa-file-export"></i>
+                        <span class="flex items-center">Export <i
+                                class="fas fa-chevron-down ml-1 text-[8px]"></i></span>
+                    </button>
+                    <div id="export-menu"
+                        class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl opacity-0 invisible transition-all duration-200 z-50">
+                        <button
+                            class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 flex items-center border-b border-gray-100"
+                            id="tool-extract">
+                            <i class="fas fa-image mr-3 text-blue-500"></i> Save as Image
+                        </button>
+                        <button
+                            class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 flex items-center"
+                            id="tool-compress">
+                            <i class="fas fa-file-archive mr-3 text-purple-500"></i> Compress PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Container -->
+            <div id="pdf-render-container" class="flex-1 flex justify-center p-8">
+                <!-- Pages will be rendered here -->
+                <div id="empty-state" class="flex flex-col items-center justify-center h-full text-white opacity-50">
+                    <i class="fas fa-file-medical text-6xl mb-4"></i>
+                    <p class="text-xl">Open a PDF or Image to start editing</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Pin List Sidebar -->
+        <aside id="pin-sidebar" class="w-64 bg-white border-l border-gray-200 flex flex-col z-20">
+            <div class="p-4 border-b border-gray-200 bg-white flex justify-between items-center">
+                <h2 class="font-bold text-gray-700 text-sm uppercase tracking-wide">Pin List</h2>
+                <span id="pin-count"
+                    class="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="pin-list-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div id="pin-empty-state" class="text-center text-gray-400 text-sm mt-10">
+                    <i class="fas fa-thumbtack text-2xl mb-2"></i>
+                    <p>Select an area and click "Copy" to pin it here.</p>
+                </div>
+            </div>
+        </aside>
+        </aside>
+
+    </div>
+
+    <!-- Modals/Overlays -->
+    <!-- Copy Button for Selection -->
+    <button id="selection-copy-btn"
+        class="hidden absolute z-50 bg-blue-600 text-white px-3 py-1.5 rounded shadow-lg text-sm font-medium hover:bg-blue-700 transition transform -translate-y-full -translate-x-1/2 pointer-events-auto flex items-center gap-2">
+        <i class="fas fa-thumbtack"></i> Copy to Pin List
+    </button>
+    <div id="tool-properties-overlay" class="p-5">
+        <div class="flex items-center justify-between mb-4">
+            <h3 id="overlay-title" class="text-sm font-bold text-gray-800 uppercase tracking-wider">Draw Settings</h3>
+            <button onclick="hideToolProperties()" class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="mb-5">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Color</label>
+            <div id="color-palette" class="grid grid-cols-6 gap-2">
+                <!-- Swatches added via JS -->
+            </div>
+        </div>
+
+        <!-- Thickness Selector -->
+        <div class="mb-5">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Thickness</label>
+            <div id="thickness-selector" class="grid grid-cols-4 gap-2">
+                <div class="thickness-option active" data-value="2">
+                    <div class="thickness-line w-1" style="height: 2px;"></div>
+                </div>
+                <div class="thickness-option" data-value="5">
+                    <div class="thickness-line w-2" style="height: 4px;"></div>
+                </div>
+                <div class="thickness-option" data-value="10">
+                    <div class="thickness-line w-3" style="height: 6px;"></div>
+                </div>
+                <div class="thickness-option" data-value="20">
+                    <div class="thickness-line w-4" style="height: 8px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Opacity Slider (Hidden for some tools) -->
+        <div id="opacity-control" class="mb-2 hidden">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Opacity</label>
+            <input type="range" id="opacity-slider" min="0.1" max="1.0" step="0.1" value="0.5"
+                class="w-full accent-blue-600">
+            <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+                <span>Light</span>
+                <span>Strong</span>
+            </div>
+        </div>
+
+        <!-- Text Tool Help -->
+        <div id="text-tool-help" class="text-[11px] text-blue-600 bg-blue-50 p-2 rounded hidden">
+            <i class="fas fa-info-circle mr-1"></i> Click anywhere on the page to add text.
+        </div>
+    </div>
+
+    <!-- Text Input Modal (Floating) -->
+    <div id="text-input-overlay" class="fixed z-50 hidden">
+        <input type="text" id="annotation-text-input"
+            class="bg-white border-2 border-blue-500 rounded-lg px-3 py-2 shadow-xl focus:outline-none min-w-[200px]"
+            placeholder="Type text here...">
+    </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu">
+        <button id="ctx-copy"><i class="fas fa-copy mr-2"></i> Copy</button>
+        <button id="ctx-duplicate"><i class="fas fa-clone mr-2"></i> Duplicate</button>
+        <div class="h-px bg-gray-200 my-1"></div>
+        <button id="ctx-delete" class="text-red-600"><i class="fas fa-trash-alt mr-2"></i> Delete</button>
+    </div>
+
+    <!-- Action Menu for Text Selection -->
+    <div id="action-menu">
+        <button id="action-translate"><i class="fas fa-language"></i> Translate</button>
+        <button id="action-ocr"><i class="fas fa-eye"></i> OCR Selection</button>
+        <button id="action-copy-text"><i class="fas fa-copy"></i> Copy Text</button>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div id="pricing-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden transform transition-all scale-100 p-6 relative">
+            <button id="close-pricing" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="text-center mb-8">
+                <div
+                    class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-crown text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Upgrade to Pro</h2>
+                <p class="text-gray-500 mt-2">Unlock unlimited PDF OCR, Summaries, and Translations.</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="flex items-center">
+                    <div
+                        class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-green-100 text-green-500">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <p class="ml-3 text-gray-700">Unlimited PDF Pages processing</p>
+                </div>
+                <div class="flex items-center">
+                    <div
+                        class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-green-100 text-green-500">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <p class="ml-3 text-gray-700">AI Summarization (GPT-4)</p>
+                </div>
+                <div class="flex items-center">
+                    <div
+                        class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-green-100 text-green-500">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <p class="ml-3 text-gray-700">Instant Translation to 50+ languages</p>
+                </div>
+                <div class="flex items-center">
+                    <div
+                        class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-green-100 text-green-500">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <p class="ml-3 text-gray-700">Priority Processing Speed</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <!-- Monthly Option -->
+                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition relative"
+                    id="plan-monthly">
+                    <div class="text-center">
+                        <h3 class="font-bold text-gray-700">Monthly</h3>
+                        <div class="text-2xl font-bold text-blue-600 my-1">$4.99</div>
+                        <span class="text-xs text-gray-400">/month</span>
+                    </div>
+                    <!-- Radio circle -->
+                    <div
+                        class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-600 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Yearly Option -->
+                <div class="border-2 border-blue-600 bg-blue-50 rounded-xl p-4 cursor-pointer relative shadow-sm"
+                    id="plan-yearly">
+                    <div
+                        class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        SAVE 33%
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-bold text-gray-800">Yearly</h3>
+                        <div class="text-2xl font-bold text-blue-600 my-1">$39.99</div>
+                        <span class="text-xs text-gray-500">/year</span>
+                    </div>
+                    <!-- Selected Radio -->
+                    <div
+                        class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 border-blue-600 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-subscribe"
+                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3.5 rounded-xl hover:shadow-lg transition transform hover:-translate-y-0.5">
+                Continue to Checkout
+            </button>
+            <p class="text-xs text-gray-400 text-center mt-4">Secure payment via Paddle. Cancel
+                anytime.</p>
+        </div>
+    </div>
+
+    <!-- OCR Result Modal -->
+    <div id="ocr-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-eye text-3xl mr-3"></i>
+                        <h2 class="text-2xl font-bold">OCR Results</h2>
+                    </div>
+                    <button id="close-ocr-modal" class="text-white hover:text-gray-200 transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div id="ocr-result-content"
+                    class="bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap">
+                    <p class="text-gray-500 text-center">Processing...</p>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button id="copy-ocr-text"
+                        class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
+                        <i class="fas fa-copy mr-2"></i>Copy Text
+                    </button>
+                    <button id="download-ocr-text"
+                        class="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition">
+                        <i class="fas fa-download mr-2"></i>Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div id="faq-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-blue-600 p-6 text-white flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Frequently Asked Questions</h2>
+                <button onclick="document.getElementById('faq-modal').classList.add('hidden')"
+                    class="text-white hover:text-gray-200 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">How do I extract text from a PDF?</h3>
+                    <p class="text-gray-600">Open your PDF using the "Open" button in the top right. Once the document
+                        loads, navigate to the specific page and click the "OCR" button (eye icon) in the toolbar.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Can I edit or draw on my document?</h3>
+                    <p class="text-gray-600">Yes! Use the "Draw", "Highlight", or "Text" tools from the top toolbar to
+                        annotate the current page.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Is the PDF processed securely?</h3>
+                    <p class="text-gray-600">Yes, the PDF is processed securely. Using Apple Intelligence on macOS/iOS
+                        processes everything locally. On the web portal, files are securely handled in memory.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Does it support large documents?</h3>
+                    <p class="text-gray-600">Our Studio efficiently handles multi-page PDFs by generating thumbnails for
+                        easy navigation on the left pane.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ SCHEMA -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I extract text from a PDF?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open your PDF using the Open button in the top right. Once the document loads, navigate to the specific page and click the OCR button (eye icon) in the toolbar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I edit or draw on my document?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Use the Draw, Highlight, or Text tools from the top toolbar to annotate the current page."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the PDF processed securely?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, the PDF is processed securely. Using Apple Intelligence on macOS/iOS processes everything locally. On the web portal, files are securely handled in memory."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it support large documents?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our Studio efficiently handles multi-page PDFs by generating thumbnails for easy navigation on the left pane."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Paddle.js (Billing V2) -->
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script type="module" src="js/pdf-studio.js?v=2.1"></script>
+
+    <script>
+        // Check Paddle subscription to fix isPro flag for subscribers with 0 page credits
+        (function () {
+            function getUserEmail() {
+                const el = document.getElementById('user-email');
+                if (!el) return null;
+                const textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+                const email = textNode ? textNode.textContent.trim() : el.textContent.trim();
+                return (email && email !== 'user@example.com') ? email : null;
+            }
+
+            async function checkSubscription(email) {
+                try {
+                    const resp = await fetch('check_subscription.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                    const data = await resp.json();
+                    if (data && data.isPro === true) {
+                        localStorage.setItem('isPro', 'true');
+                        window.isProUser = true;
+                    }
+                } catch (e) {
+                    console.warn('[pdf-studio] Subscription check failed:', e);
+                }
+            }
+
+            var attempts = 0;
+            var poll = setInterval(function () {
+                attempts++;
+                if (typeof window.pagesBalance !== 'undefined') {
+                    clearInterval(poll);
+                    if (window.pagesBalance > 0) return;
+                    var email = getUserEmail();
+                    if (email) checkSubscription(email);
+                }
+                if (attempts > 100) clearInterval(poll);
+            }, 150);
+        })();
+    </script>
+</body>
+
+</html>

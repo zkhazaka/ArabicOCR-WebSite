@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Editor - Arabic OCR Blog</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        #editor-en,
+        #editor-ar {
+            height: 400px;
+        }
+
+        .ql-toolbar.ql-snow {
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            background: #f9fafb;
+        }
+
+        .ql-container.ql-snow {
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="blog-admin.html" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                </a>
+                <span id="editor-page-title" class="font-bold text-xl">Create New Post</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="save-status" class="text-gray-400 text-sm italic">Changes not saved</span>
+                <button id="save-draft-btn"
+                    class="text-gray-700 font-bold px-4 py-2 hover:bg-gray-100 rounded-lg transition">Save
+                    Draft</button>
+                <button id="publish-btn"
+                    class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-md">Publish
+                    Post</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Main Form Column -->
+        <div class="lg:col-span-2 space-y-8">
+
+            <!-- Language Selection -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                <span class="font-bold text-gray-900">Editing Language:</span>
+                <button id="lang-btn-en"
+                    class="px-4 py-2 rounded-lg bg-blue-100 text-blue-700 font-bold">English</button>
+                <button id="lang-btn-ar"
+                    class="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 font-bold">العربية</button>
+            </div>
+
+            <!-- English Content -->
+            <div id="section-en" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">English
+                        Title</label>
+                    <input type="text" id="title-en" placeholder="Enter article title in English..."
+                        class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">English
+                        Excerpt</label>
+                    <textarea id="excerpt-en" rows="3" placeholder="Brief summary of the article..."
+                        class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm transition"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">English
+                        Content</label>
+                    <div id="editor-en"></div>
+                </div>
+            </div>
+
+            <!-- Arabic Content -->
+            <div id="section-ar" class="space-y-6 hidden" dir="rtl">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">العنوان
+                        بالعربية</label>
+                    <input type="text" id="title-ar" placeholder="أدخل عنوان المقال بالعربية..."
+                        class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">نبذة قصيرة</label>
+                    <textarea id="excerpt-ar" rows="3" placeholder="ملخص قصير للمقال..."
+                        class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm transition"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">المحتوى
+                        بالعربية</label>
+                    <div id="editor-ar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Sidebar -->
+        <div class="space-y-8">
+            <!-- Featured Image -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-gray-900 mb-4">Featured Image</h3>
+                <div id="image-upload-area"
+                    class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-blue-500 cursor-pointer group transition">
+                    <div id="image-preview" class="hidden h-40 mb-4 rounded-lg overflow-hidden">
+                        <img src="" class="w-full h-full object-cover">
+                    </div>
+                    <div id="upload-placeholder">
+                        <i
+                            class="fas fa-cloud-upload-alt text-3xl text-gray-300 group-hover:text-blue-500 transition mb-2"></i>
+                        <p class="text-xs text-gray-500">Drag & drop or click to upload</p>
+                    </div>
+                </div>
+                <input type="file" id="featured-image-file" class="hidden" accept="image/*">
+            </div>
+
+            <!-- Meta Settings -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                <h3 class="font-bold text-gray-900">Post Settings</h3>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Content Type</label>
+                    <select id="post-type"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm">
+                        <option value="article">Article</option>
+                        <option value="tutorial">Tutorial</option>
+                        <option value="news">News Update</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Categories</label>
+                    <div id="categories-select-list"
+                        class="space-y-2 max-h-40 overflow-y-auto p-3 border border-gray-100 rounded-lg">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tags (Comma separated)</label>
+                    <input type="text" id="post-tags" placeholder="ocr, ai, docs"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Slug (URL)</label>
+                    <input type="text" id="post-slug" placeholder="automatic-slug-from-title"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm">
+                </div>
+            </div>
+
+            <!-- SEO Overrides -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                <h3 class="font-bold text-gray-900">SEO Meta</h3>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Meta Title Override</label>
+                    <input type="text" id="meta-title"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Meta Description
+                        Override</label>
+                    <textarea id="meta-description" rows="2"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm"></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script type="module" src="js/blog-admin.js"></script>
+</body>
+
+</html>

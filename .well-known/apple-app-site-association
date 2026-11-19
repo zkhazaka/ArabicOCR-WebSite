@@ -1,0 +1,19 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "5EPS36V532.com.kanzati.Arabic-OCR",
+                "paths": [
+                    "*"
+                ]
+            },
+            {
+                "appID": "5EPS36V532.com.kanzati.arabicocr",
+                "paths": [
+                    "*"
+                ]
+            }
+        ]
+    }
+}

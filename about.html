@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO & Metadata -->
+    <title>About Us - Arabic OCR & Ziad Khazzaka</title>    <!-- Open Graph / Twitter (added for link previews; mirrors title/description above) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Arabic OCR" />
+    <meta property="og:title" content="About Us - Arabic OCR & Ziad Khazzaka" />
+    <meta property="og:description" content="Learn about Ziad Khazzaka and the team behind Arabic OCR, the leading text recognition app for Arabic language. | تعرف على زياد خزاقة والفريق خلف تطبيق Arabic OCR، التطبيق الرائد للتعرف على النصوص العربية." />
+    <meta property="og:url" content="https://arabic-ocr.com/about.html" />
+    <meta property="og:image" content="https://arabic-ocr.com/icon.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="About Us - Arabic OCR & Ziad Khazzaka" />
+    <meta name="twitter:description" content="Learn about Ziad Khazzaka and the team behind Arabic OCR, the leading text recognition app for Arabic language. | تعرف على زياد خزاقة والفريق خلف تطبيق Arabic OCR، التطبيق الرائد للتعرف على النصوص العربية." />
+    <meta name="twitter:image" content="https://arabic-ocr.com/icon.jpg" />
+    <meta name="description"
+        content="Learn about Ziad Khazzaka and the team behind Arabic OCR, the leading text recognition app for Arabic language. | تعرف على زياد خزاقة والفريق خلف تطبيق Arabic OCR، التطبيق الرائد للتعرف على النصوص العربية." />
+    <meta name="keywords"
+        content="about us, ziad khazzaka, kanzati, developer, arabic ocr team, our story, من نحن, زياد خزاقة, مطور التطبيق, قصة نجاحنا" />
+    <link rel="canonical" href="https://arabic-ocr.com/about.html" />
+
+    <!-- STRUCTURED DATA: Person -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Ziad Khazzaka",
+      "url": "https://arabic-ocr.com/about.html",
+      "image": "https://arabic-ocr.com/icon.jpg",
+      "jobTitle": "Full-Stack App Developer",
+      "description": "Founder of KANZATI - Ziad Khazzaka & Co., and developer of Arabic OCR and other iOS, Android, macOS, and web applications.",
+      "worksFor": { "@id": "https://www.kanzati.com" },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Zahle",
+        "addressRegion": "Beqaa Governorate",
+        "addressCountry": "LB"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/ziad-khazzaka-788526362",
+        "https://www.kanzati.com"
+      ],
+      "knowsAbout": ["iOS Development", "Android Development", ".NET", "React", "macOS Development", "Arabic OCR", "Artificial Intelligence"]
+    }
+    </script>
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Global site tag (gtag.js) - Google Ads: 17090524858 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17090524858"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'AW-17090524858');
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- HEADER -->
+    <!-- HEADER -->
+    <header class="bg-white shadow-md relative z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img src="/logo.png" alt="Arabic OCR App Icon" class="w-10 h-10" />
+                <span class="text-2xl font-bold">Arabic OCR</span>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="space-x-6 hidden md:block">
+                <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
+                <a href="index.html#web-ocr-demo" class="text-blue-600 font-bold hover:underline">Try Online Demo</a>
+                <a href="pricing.html" class="text-gray-700 hover:text-blue-600 font-medium">Pricing</a>
+                <a href="portal.html" class="text-blue-600 font-bold hover:underline">✨ Portal</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-blue-600 font-medium">Features</a>
+                <a href="contact.html" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+                <a href="about.html" class="text-gray-700 hover:text-blue-600 font-medium">About</a>
+                <a href="login.html?redirect=about.html" rel="nofollow"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 font-medium transition">Login</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-700 focus:outline-none p-2">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white border-t px-6 py-4 space-y-4 shadow-xl absolute w-full left-0 top-full">
+            <a href="index.html" class="block text-gray-700 hover:text-blue-600 font-medium">Home</a>
+            <a href="index.html#web-ocr-demo" class="block text-blue-600 font-bold">Try Online Demo</a>
+            <a href="pricing.html" class="block text-gray-700 hover:text-blue-600 font-medium">Pricing</a>
+            <a href="portal.html" class="block text-blue-600 font-bold">✨ Portal</a>
+            <a href="index.html#features" class="block text-gray-700 hover:text-blue-600 font-medium">Features</a>
+            <a href="contact.html" class="block text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+            <a href="about.html" class="block text-gray-700 hover:text-blue-600 font-medium">About</a>
+            <a href="login.html?redirect=about.html" rel="nofollow"
+                class="block w-full text-center bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 font-medium transition">Login</a>
+        </div>
+
+        <script>
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+        </script>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="bg-white py-20">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+
+            <!-- Profile Image -->
+            <div class="relative inline-block mb-8">
+                <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-blue-100 shadow-xl mx-auto group">
+                    <img src="ziad.jpg" alt="Ziad Khazzaka" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                </div>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-gray-900">Ziad Khazzaka</h1>
+            <p class="text-xl text-blue-600 font-bold mb-1">Full-Stack App Developer</p>
+            <p class="text-md text-gray-500 font-medium mb-6">iOS, Android, .NET, React, macOS | Turning Ideas into
+                Powerful Apps</p>
+
+            <div class="flex justify-center items-center gap-2 text-gray-500 mb-8 text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Zahle, Beqaa Governorate, Lebanon</span>
+                <span class="mx-2">•</span>
+                <a href="https://www.kanzati.com" target="_blank" class="text-blue-600 hover:underline">Kanzati.com</a>
+            </div>
+
+            <div class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-10 text-left space-y-4">
+                <p>
+                    I’m Ziad Khazzaka, founder of <strong>KANZATI – Ziad Khazzaka & Co.</strong>, and the creative mind
+                    behind a growing portfolio of innovative mobile apps designed to solve real-world problems through
+                    intuitive technology.
+                </p>
+                <!-- ... content ... -->
+            </div>
+
+            <!--
+                No manual page_view here: GA4 collects page_view automatically via
+                Enhanced Measurement. Firing it by hand as well double-counted every
+                visit to this page.
+            -->
+
+            <div class="flex justify-center gap-4">
+                <a href="contact.html"
+                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition shadow-lg">
+                    Get in Touch
+                </a>
+                <a href="https://www.linkedin.com/in/ziad-khazzaka-788526362" target="_blank"
+                    class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full font-semibold transition border border-gray-200 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                    LinkedIn
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE SECTION -->
+    <section class="bg-white py-16 border-t border-gray-100">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-10 text-center">Professional Experience</h2>
+
+            <div class="relative pl-8 border-l-2 border-blue-100">
+                <!-- Role -->
+                <div class="mb-10 relative">
+                    <div class="absolute -left-[41px] bg-blue-600 h-5 w-5 rounded-full border-4 border-white shadow-sm">
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900">Co-Founder & App Developer</h3>
+                    <div class="text-blue-600 font-medium mb-1">Kanzati.com <span
+                            class="text-gray-400 text-sm font-normal">• Full-time</span></div>
+                    <div class="text-gray-500 text-sm mb-4">Jan 2017 - Present · 9 yrs 1 mo</div>
+
+                    <ul class="space-y-2 text-gray-600 list-disc list-outside ml-4">
+                        <li>Co-founded <strong>Kanzati.com</strong>, specializing in custom app development for mobile,
+                            web, and desktop platforms.</li>
+                        <li>Lead the development of iOS (App Store) and Android (Play Store) applications.</li>
+                        <li>Built and maintained .NET applications for various business solutions.</li>
+                        <li>Developed macOS apps, delivering optimized and user-focused experiences.</li>
+                        <li>Designed and built web applications using React and modern front-end technologies.</li>
+                        <li>Oversaw project management, client communication, and deployment processes.</li>
+                        <li>Passionate about building scalable, high-quality digital products.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS SECTION -->
+    <section class="bg-gray-50 py-16">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-10 text-center">Technical Expertise</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <!-- Skill 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="text-blue-500 font-bold text-xl mb-2">Mobile Dev</div>
+                    <p class="text-sm text-gray-500">iOS (Swift), Android (Kotlin)</p>
+                </div>
+                <!-- Skill 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="text-green-500 font-bold text-xl mb-2">Web & Desktop</div>
+                    <p class="text-sm text-gray-500">React, .NET, macOS AppKit</p>
+                </div>
+                <!-- Skill 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="text-purple-500 font-bold text-xl mb-2">AI & ML</div>
+                    <p class="text-sm text-gray-500">Voice Synthesis, OCR</p>
+                </div>
+                <!-- Skill 4 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="text-indigo-500 font-bold text-xl mb-2">Full Stack</div>
+                    <p class="text-sm text-gray-500">SQL, Firebase, PHP</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS SECTION (Reused from Index) -->
+    <section class="bg-white py-20">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-12">Featured Projects</h2>
+
+            <div class="grid gap-10 md:grid-cols-4 justify-center">
+
+                <!-- Luna AI -->
+                <div class="hover:-translate-y-2 transition duration-300">
+                    <a href="https://apps.apple.com/us/app/luna-ai/id6738606913"
+                        class="block overflow-hidden rounded-[22%] w-40 h-40 mx-auto shadow-lg border border-gray-100">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/62/4c/6e/624c6ef7-074e-5a38-bd54-44f02a0a8bd9/AppIcon-0-1x_U007epad-0-0-0-1-0-85-220-0.jpeg/540x540bb.jpg"
+                            alt="Luna AI" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    </a>
+                    <h4 class="text-lg font-semibold mb-2 mt-4">Luna AI</h4>
+                    <p class="text-sm text-gray-500 mb-3 px-2">Advanced AI Assistant</p>
+                </div>
+
+                <!-- Arabic OCR -->
+                <div class="hover:-translate-y-2 transition duration-300">
+                    <a href="https://apps.apple.com/us/app/arabic-ocr/id6745792738"
+                        class="block overflow-hidden rounded-[22%] w-40 h-40 mx-auto shadow-lg border border-gray-100">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/88/92/07/88920761-3bc3-8aa5-4095-cccc411fda69/AppIcon-0-1x_U007ephone-0-0-0-1-0-sRGB-85-220-0.jpeg/540x540bb.jpg"
+                            alt="Arabic OCR" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    </a>
+                    <h4 class="text-lg font-semibold mb-2 mt-4">Arabic OCR</h4>
+                    <p class="text-sm text-gray-500 mb-3 px-2">Text Recognition Tool</p>
+                </div>
+
+                <!-- SQL Dump -->
+                <div class="hover:-translate-y-2 transition duration-300">
+                    <a href="https://apps.apple.com/us/app/sql-dump/id6744847226"
+                        class="block overflow-hidden rounded-[22%] w-40 h-40 mx-auto shadow-lg border border-gray-100">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/05/f4/90/05f490c7-627c-fca7-3be5-44c9a69ade0f/AppIcon-1x_U007ephone-0-1-sRGB-85-220-0.jpeg/540x540bb.jpg"
+                            alt="SQL Dump" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    </a>
+                    <h4 class="text-lg font-semibold mb-2 mt-4">SQL Dump</h4>
+                    <p class="text-sm text-gray-500 mb-3 px-2">Database Utility</p>
+                </div>
+
+                <!-- Fake Voice -->
+                <div class="hover:-translate-y-2 transition duration-300">
+                    <a href="https://apps.apple.com/us/app/fake-voice-voice-cloning/id6740585303"
+                        class="block overflow-hidden rounded-[22%] w-40 h-40 mx-auto shadow-lg border border-gray-100">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/8b/05/47/8b0547a1-5b6d-fdd5-c602-0ae2d549b746/AppIcon-0-1x_U007epad-0-1-85-220-0.png/540x540bb.jpg"
+                            alt="Fake Voice" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    </a>
+                    <h4 class="text-lg font-semibold mb-2 mt-4">Fake Voice</h4>
+                    <p class="text-sm text-gray-500 mb-3 px-2">AI Voice Cloning</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+                        <!-- FOOTER -->
+    <footer class="bg-yellow-300 border-t border-yellow-400 py-12">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-5 gap-8">
+            <div class="col-span-2">
+                <div class="flex items-center space-x-3 mb-6">
+                    <img src="/logo.png" alt="Logo" class="w-8 h-8" loading="lazy" decoding="async">
+                    <span
+                        class="text-xl font-bold text-gray-900">Arabic
+                        OCR</span>
+                </div>
+                <p class="text-gray-800 max-w-sm mb-6">The leading platform for Arabic text recognition and document
+                    processing. Empowering users with AI-driven insights.</p>
+                <div class="mb-6 mr-8">
+                    <h4 class="font-bold text-gray-900 mb-2">Newsletter</h4>
+                    <form class="flex text-sm">
+                        <input type="email" placeholder="Enter your email" class="px-4 py-2 border border-yellow-400 rounded-l-lg focus:outline-none focus:border-gray-900 flex-grow" required>
+                        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-r-lg hover:bg-gray-800 transition">Subscribe</button>
+                    </form>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-700 hover:text-gray-900 text-xl transition"><i
+                            class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 text-xl transition"><i
+                            class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 text-xl transition"><i
+                            class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold text-gray-900 mb-6">Quick Links</h4>
+                <ul class="space-y-4 text-gray-800 font-medium">
+                    <li><a href="index.html" class="hover:text-gray-600 transition">Home</a></li>
+                    <li><a href="portal.html" class="hover:text-gray-600 transition">Web Portal</a></li>
+                    <li><a href="pdf-studio.html" class="hover:text-gray-600 transition">PDF Studio</a></li>
+                    <li><a href="pricing.html" class="hover:text-gray-600 transition">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold text-gray-900 mb-6">Resources</h4>
+                <ul class="space-y-4 text-gray-800 font-medium">
+                    <li><a href="about.html" class="hover:text-gray-600 transition">About Us</a></li>
+                    <li><a href="contact.html" class="hover:text-gray-600 transition">Contact</a></li>
+                    <li><a href="blog.html" class="hover:text-gray-600 transition">Blog</a></li>
+                    <li><a href="ultimate-guide-arabic-ocr.html" class="hover:text-gray-600 transition">Guide</a></li>
+                    <li><a href="terms.html" class="hover:text-gray-600 transition">Terms of Use</a></li>
+                    <li><a href="privacy.html" class="hover:text-gray-600 transition">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold text-gray-900 mb-6">More Apps</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <span class="text-gray-900 font-bold">Wand Desktop</span>
+                        <a href="https://apps.apple.com/us/app/wand-desktop/id6757389093" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>Mac</a>
+                    </li>
+                    <li class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <span class="text-gray-900 font-bold">Luna AI</span>
+                        <a href="https://apple.co/4eVku6p" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://play.google.com/store/apps/details?id=com.kanzati.lunaai" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-android mr-0.5"></i>Android</a>
+                    </li>
+                    <li class="flex items-center gap-x-2">
+                        <span class="text-gray-900 font-bold">Arabic OCR</span>
+                        <a href="https://apps.apple.com/us/app/arabic-ocr/id6745792738" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://play.google.com/store/apps/details?id=com.kanzati.arabicocr" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-android mr-0.5"></i>Android</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://apps.microsoft.com/detail/9P2NRS4S8ND6?hl=en-us&amp;gl=US&amp;ocid=pdpshare" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-windows mr-0.5"></i>Windows</a>
+                    </li>
+                    <li class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                        <span class="text-gray-900 font-bold">SQL Dump</span>
+                        <a href="https://apps.apple.com/us/app/sql-dump/id6744847226" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                    </li>
+                    <li class="flex items-center gap-x-2">
+                        <span class="text-gray-900 font-bold">Fake Voice</span>
+                        <a href="https://apps.apple.com/us/app/fake-voice-%D8%A7%D8%B3%D8%AA%D9%86%D8%B3%D8%A7%D8%AE-%D8%A7%D9%84%D8%B5%D9%88%D8%AA/id6740585303" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-apple mr-0.5"></i>iOS</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://play.google.com/store/apps/details?id=com.kanzati.fakevoice" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-android mr-0.5"></i>Android</a>
+                        <span class="text-yellow-600 font-bold text-sm">|</span>
+                        <a href="https://apps.microsoft.com/detail/9NSPC75M8L0T?hl=en-us&amp;gl=US" target="_blank" class="text-sm font-medium text-gray-700 hover:text-gray-900"><i class="fab fa-windows mr-0.5"></i>Windows</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 border-t border-yellow-400 mt-12 pt-8 text-center text-gray-600 text-sm font-medium">
+            <p>&copy; 2026 Arabic OCR - Ziad Khazzaka & Co. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { monitorAuthState } from './js/auth.js';
+        monitorAuthState();
+    </script>
+</body>
+
+</html>
