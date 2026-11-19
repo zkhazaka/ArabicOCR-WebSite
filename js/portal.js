@@ -2768,3 +2768,225 @@ window._getRefinePrompt = function(isArabic) {
     const templatePrompt = getTemplatePrompt(isArabic);
     return templatePrompt || (isArabic ? REFINE_SYSTEM_PROMPT_AR : REFINE_SYSTEM_PROMPT_EN);
 };
+
+// ═══════════════════════════════════════════════════════════════════
+// PHASE 4.1: OCR COMPARISON / DIFF VIEW
+// ═══════════════════════════════════════════════════════════════════
+
+const btnDiffView = document.getElementById('btn-diff-view');
+const diffViewerContainer = document.getElementById('diff-viewer-container');
+const diffOriginal = document.getElementById('diff-original');
+const diffRefined = document.getElementById('diff-refined');
+const btnCloseDiff = document.getElementById('btn-close-diff');
+
+// Simple word-level diff algorithm
+function computeDiff(oldText, newText) {
+    const oldWords = oldText.split(/(\s+)/);
+    const newWords = newText.split(/(\s+)/);
+
+    // LCS-based diff for reasonable-length texts
+    const m = oldWords.length, n = newWords.length;
+
+    // For very long texts, fall back to simple display
+    if (m * n > 500000) {
+        return {
+            oldHtml: oldText,
+            newHtml: newText
+        };
+    }
+
+    // Build LCS table
+    const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1));
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (oldWords[i - 1] === newWords[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            } else {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+
+    // Backtrack to find diff
+    const oldResult = [];
+    const newResult = [];
+    let i = m, j = n;
+
+    while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && oldWords[i - 1] === newWords[j - 1]) {
+            oldResult.unshift(escapeHtml(oldWords[i - 1]));
+            newResult.unshift(escapeHtml(newWords[j - 1]));
+            i--; j--;
+        } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+            newResult.unshift(`<span class="diff-add">${escapeHtml(newWords[j - 1])}</span>`);
+            j--;
+        } else {
+            oldResult.unshift(`<span class="diff-remove">${escapeHtml(oldWords[i - 1])}</span>`);
+            i--;
+        }
+    }
+
+    return {
+        oldHtml: oldResult.join(''),
+        newHtml: newResult.join('')
+    };
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function showDiffView() {
+    const original = textContent.original || '';
+    const refined = textContent.refined || '';
+
+    if (!refined) {
+        return showToast('Run AI Refine first to compare texts', 'warning');
+    }
+
+    // Strip HTML tags for plain text comparison
+    const plainOriginal = original.replace(/<[^>]*>/g, '').trim();
+    const plainRefined = refined.replace(/<[^>]*>/g, '').trim();
+
+    const diff = computeDiff(plainOriginal, plainRefined);
+
+    if (diffOriginal) diffOriginal.innerHTML = diff.oldHtml;
+    if (diffRefined) diffRefined.innerHTML = diff.newHtml;
+
+    // Set direction based on content
+    const isArabic = ARABIC_SCRIPT_PATTERN.test(plainOriginal);
+    if (diffOriginal) diffOriginal.style.direction = isArabic ? 'rtl' : 'ltr';
+    if (diffRefined) diffRefined.style.direction = isArabic ? 'rtl' : 'ltr';
+
+    if (diffViewerContainer) diffViewerContainer.classList.add('show');
+
+    // Hide editor and other viewers
+    const editorContainer = document.getElementById('editor-container');
+    if (editorContainer) editorContainer.style.display = 'none';
+    const imageViewer = document.getElementById('image-viewer-container');
+    if (imageViewer) imageViewer.classList.add('hidden');
+    const tablesViewer = document.getElementById('tables-viewer-container');
+    if (tablesViewer) tablesViewer.classList.add('hidden');
+}
+
+function hideDiffView() {
+    if (diffViewerContainer) diffViewerContainer.classList.remove('show');
+    const editorContainer = document.getElementById('editor-container');
+    if (editorContainer) editorContainer.style.display = '';
+}
+
+if (btnDiffView) {
+    btnDiffView.addEventListener('click', showDiffView);
+}
+
+if (btnCloseDiff) {
+    btnCloseDiff.addEventListener('click', hideDiffView);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PHASE 4.2: SHARE DOCUMENT LINK
+// ═══════════════════════════════════════════════════════════════════
+
+const btnShare = document.getElementById('btn-share');
+const shareModal = document.getElementById('share-modal');
+const shareLinkInput = document.getElementById('share-link-input');
+const btnCopyShareLink = document.getElementById('btn-copy-share-link');
+const btnCloseShareModal = document.getElementById('btn-close-share-modal');
+
+function compressText(text) {
+    // Use base64 encoding of the text for URL sharing
+    // For longer texts, truncate to keep URL reasonable
+    const maxLen = 4000; // ~5.3KB base64
+    const truncated = text.length > maxLen ? text.slice(0, maxLen) + '\n\n[... truncated for sharing]' : text;
+    return btoa(unescape(encodeURIComponent(truncated)));
+}
+
+function decompressText(encoded) {
+    try {
+        return decodeURIComponent(escape(atob(encoded)));
+    } catch {
+        return null;
+    }
+}
+
+function generateShareLink() {
+    const text = textContent.original || quill.getText().trim();
+    if (!text || text.length < 5) {
+        return showToast('No text to share', 'warning');
+    }
+
+    const filename = filenameDisplay?.textContent || 'Document';
+    const payload = JSON.stringify({ t: text, f: filename });
+    const encoded = compressText(payload);
+    const url = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
+
+    if (shareLinkInput) shareLinkInput.value = url;
+    if (shareModal) shareModal.classList.add('show');
+}
+
+if (btnShare) {
+    btnShare.addEventListener('click', generateShareLink);
+}
+
+if (btnCopyShareLink) {
+    btnCopyShareLink.addEventListener('click', () => {
+        if (shareLinkInput) {
+            shareLinkInput.select();
+            navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+            }).catch(() => {
+                document.execCommand('copy');
+                showToast('Link copied!', 'success');
+            });
+        }
+    });
+}
+
+if (btnCloseShareModal) {
+    btnCloseShareModal.addEventListener('click', () => {
+        if (shareModal) shareModal.classList.remove('show');
+    });
+}
+
+// Close share modal on backdrop click
+if (shareModal) {
+    shareModal.addEventListener('click', (e) => {
+        if (e.target === shareModal) shareModal.classList.remove('show');
+    });
+}
+
+// Check for shared document on page load
+(function checkSharedDocument() {
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get('shared');
+    if (!shared) return;
+
+    const decoded = decompressText(shared);
+    if (!decoded) return;
+
+    try {
+        const data = JSON.parse(decoded);
+        if (!data.t) return;
+
+        // Wait for page to initialize, then load the shared text
+        setTimeout(() => {
+            textContent = { original: data.t, refined: '', summary: '', translation: '' };
+            quill.setText('');
+            quill.clipboard.dangerouslyPasteHTML(0, data.t.replace(/\n/g, '<br>'));
+            applyContentDirection(data.t);
+
+            if (filenameDisplay) filenameDisplay.textContent = data.f || 'Shared Document';
+            switchTab('original');
+
+            // Show wizard and result
+            if (typeof showWizardView === 'function') showWizardView();
+            showStep('result');
+            showToast('Shared document loaded', 'info');
+
+            // Clean URL
+            window.history.replaceState({}, '', window.location.pathname);
+        }, 1000);
+    } catch (e) {
+        console.warn('Failed to load shared document:', e);
+    }
+})();

@@ -1014,6 +1014,129 @@
         body.dark-mode #template-dropdown { background: #1e293b; border-color: #334155; }
         body.dark-mode #template-dropdown button { color: #cbd5e1; }
         body.dark-mode #template-dropdown button:hover { background: #334155; }
+
+        /* ===== DIFF VIEW ===== */
+        #diff-viewer-container {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: white;
+            overflow: auto;
+            z-index: 10;
+            padding: 16px;
+        }
+
+        #diff-viewer-container.show { display: block; }
+
+        .diff-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .diff-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .diff-column {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .diff-column-header {
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .diff-column-header.original { background: #fef3c7; color: #92400e; }
+        .diff-column-header.refined { background: #d1fae5; color: #065f46; }
+
+        .diff-column-body {
+            padding: 12px;
+            font-size: 14px;
+            line-height: 1.8;
+            direction: rtl;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .diff-add { background: #dcfce7; color: #166534; border-radius: 2px; padding: 0 2px; }
+        .diff-remove { background: #fee2e2; color: #991b1b; text-decoration: line-through; border-radius: 2px; padding: 0 2px; }
+
+        body.dark-mode #diff-viewer-container { background: #0f172a; }
+        body.dark-mode .diff-column { border-color: #334155; }
+        body.dark-mode .diff-column-body { color: #cbd5e1; }
+        body.dark-mode .diff-add { background: #064e3b; color: #6ee7b7; }
+        body.dark-mode .diff-remove { background: #7f1d1d; color: #fca5a5; }
+
+        @media (max-width: 767px) {
+            .diff-columns { grid-template-columns: 1fr; }
+        }
+
+        /* ===== SHARE MODAL ===== */
+        #share-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+        #share-modal.show { display: flex; }
+
+        .share-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .share-link-box {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .share-link-box input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: monospace;
+            background: #f9fafb;
+            color: #374151;
+        }
+
+        .share-link-box button {
+            padding: 10px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        body.dark-mode .share-modal-content { background: #1e293b; color: #e2e8f0; }
+        body.dark-mode .share-link-box input { background: #0f172a; border-color: #334155; color: #e2e8f0; }
     </style>
 </head>
 
@@ -1381,6 +1504,18 @@
                                     title="Toggle Split View">
                                     <i class="fas fa-columns text-sm"></i>
                                 </button>
+                                <!-- Diff view -->
+                                <button id="btn-diff-view"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                    title="Compare Original vs Refined">
+                                    <i class="fas fa-code-compare text-sm"></i>
+                                </button>
+                                <!-- Share -->
+                                <button id="btn-share"
+                                    class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
+                                    title="Share Document">
+                                    <i class="fas fa-share-alt text-sm"></i>
+                                </button>
 
                                 <button id="btn-copy"
                                     class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition"
@@ -1455,6 +1590,26 @@
                                     <img id="result-source-image" src=""
                                         class="max-w-full max-h-full shadow-lg rounded-lg"
                                         style="object-fit: contain;" loading="lazy" decoding="async" />
+                                </div>
+
+                                <!-- Diff Viewer (hidden by default) -->
+                                <div id="diff-viewer-container">
+                                    <div class="diff-header">
+                                        <h3 class="text-sm font-bold text-gray-700"><i class="fas fa-code-compare mr-1.5 text-blue-600"></i>Original vs Refined</h3>
+                                        <button id="btn-close-diff" class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-gray-700 transition text-sm">
+                                            <i class="fas fa-times"></i> Close
+                                        </button>
+                                    </div>
+                                    <div class="diff-columns">
+                                        <div class="diff-column">
+                                            <div class="diff-column-header original"><i class="fas fa-file-alt mr-1"></i>Original</div>
+                                            <div class="diff-column-body" id="diff-original"></div>
+                                        </div>
+                                        <div class="diff-column">
+                                            <div class="diff-column-header refined"><i class="fas fa-wand-magic-sparkles mr-1"></i>Refined</div>
+                                            <div class="diff-column-body" id="diff-refined"></div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Tables Viewer (hidden by default) -->
@@ -2155,6 +2310,29 @@
                 </div>
             </div>
             <p class="text-xs text-gray-400 mt-4 text-center">Use <span class="shortcut-key" style="font-size:10px;">&#8984;</span> instead of Ctrl on Mac</p>
+        </div>
+    </div>
+
+    <!-- ===== SHARE MODAL ===== -->
+    <div id="share-modal">
+        <div class="share-modal-content">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-share-alt text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">Share Document</h3>
+                    <p class="text-sm text-gray-500">Anyone with this link can view the text (read-only)</p>
+                </div>
+            </div>
+            <div class="share-link-box">
+                <input type="text" id="share-link-input" readonly />
+                <button id="btn-copy-share-link"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-3"><i class="fas fa-info-circle mr-1"></i>The document text is encoded in the URL. No data is stored on any server.</p>
+            <div class="flex justify-end mt-4">
+                <button id="btn-close-share-modal" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">Close</button>
+            </div>
         </div>
     </div>
 
