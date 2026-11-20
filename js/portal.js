@@ -704,8 +704,8 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
             // ── Tier-based scan deduction ──
             const tier = window.userTier || 'free';
 
-            if (tier === 'free') {
-                // Free user: check if they have scans left
+            if (tier === 'free' && !window.isTrialActive) {
+                // Free user (not in trial): check if they have scans left
                 if (window.freeScansLeft <= 0) {
                     quill.setText('');
                     quill.clipboard.dangerouslyPasteHTML(0,
@@ -2194,7 +2194,7 @@ async function processBatchOCR(pdfDoc, pageNumbers) {
                     break;
                 }
             }
-        } else if (tier === 'free' && auth.currentUser) {
+        } else if (tier === 'free' && !window.isTrialActive && auth.currentUser) {
             for (let i = 0; i < totalPages; i++) {
                 if (window.freeScansLeft <= 0) break;
                 const remaining = await useOneFreeScan(auth.currentUser.uid);
