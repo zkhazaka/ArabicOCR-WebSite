@@ -524,9 +524,12 @@
   }
   function proactive(key, render) {
     if (!once(key)) return;
-    open(true);
-    var t = typing();
-    setTimeout(function () { t.remove(); render(); }, 900);
+    var t;
+    if (window.innerWidth >= 768) {
+      open(true);
+      t = typing();
+    }
+    setTimeout(function () { if (t) t.remove(); render(); if (window.innerWidth < 768) fab.classList.add('nudge'); }, 900);
   }
   function isAppleUser() {
     var ua = navigator.userAgent || '';
@@ -571,10 +574,14 @@
       greeted = true;
       // Clear previous chat messages so we don't duplicate the scan-complete prompt
       msgs.innerHTML = '';
-      open(true);
       addMsg(T.scanDone, 'bot');
       addChips(T.chips);
       setTimeout(function () { addMsg(T.scanTip, 'bot'); }, 800);
+      if (window.innerWidth >= 768) {
+        open(true);
+      } else {
+        fab.classList.add('nudge');
+      }
     }
   };
   window.OCRAgent = { open: function () { open(); }, close: close, engage: engage };

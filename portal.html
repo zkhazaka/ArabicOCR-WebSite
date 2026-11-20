@@ -901,8 +901,73 @@
         body.dark-mode #smart-suggestion { background: linear-gradient(135deg, #1e293b, #1e1b4b); border-color: #334155; color: #94a3b8; }
 
         @media (max-width: 767px) {
-            #chat-panel { right: 8px; left: 8px; width: auto; bottom: 80px; }
-            #chat-bubble-btn { bottom: 72px; right: 16px; }
+            #chat-panel { right: 8px; left: 8px; width: auto; bottom: 72px; max-height: 60vh; }
+            #chat-bubble-btn { bottom: 72px; right: 12px; width: 48px; height: 48px; }
+
+            /* Toolbar: horizontal scroll on mobile */
+            #step-result .h-12.border-b {
+                height: auto;
+                min-height: 44px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            #step-result .h-12.border-b::-webkit-scrollbar { display: none; }
+
+            /* Smaller pill buttons on mobile */
+            .pill-btn {
+                padding: 4px 8px !important;
+                font-size: 11px !important;
+            }
+
+            /* Upload area: less padding on mobile */
+            #drop-zone {
+                padding: 24px 16px !important;
+            }
+
+            #drop-zone h3 {
+                font-size: 1rem !important;
+            }
+
+            /* Result tabs: scrollable on mobile */
+            .result-tabs-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .result-tabs-container::-webkit-scrollbar { display: none; }
+
+            /* Step indicators: compact on mobile */
+            .wizard-step-indicators { gap: 4px; }
+
+            /* History grid: padding on mobile */
+            #history-view { padding: 12px !important; }
+
+            /* Template dropdown: full width on mobile */
+            #template-dropdown {
+                position: fixed !important;
+                left: 8px !important;
+                right: 8px !important;
+                top: auto !important;
+                bottom: 60px !important;
+                width: auto !important;
+                max-height: 60vh;
+                overflow-y: auto;
+            }
+
+            /* Export dropdown: full width on mobile */
+            #export-dropdown {
+                position: fixed !important;
+                left: 8px !important;
+                right: 8px !important;
+                top: auto !important;
+                bottom: 60px !important;
+                width: auto !important;
+            }
+
+            /* Header: compact padding */
+            #top-header { padding-left: 8px !important; padding-right: 8px !important; }
         }
 
         /* ===== SPLIT VIEW ===== */
@@ -1696,19 +1761,19 @@
         <div class="flex">
             <button class="mobile-nav-tab active" onclick="document.getElementById('link-new-scan').click()">
                 <i class="fas fa-magic"></i>
-                <span>Scan</span>
+                <span data-i18n="side_new">Scan</span>
             </button>
             <button class="mobile-nav-tab" onclick="document.getElementById('link-history').click()">
                 <i class="fas fa-history"></i>
-                <span>History</span>
+                <span data-i18n="side_history">History</span>
             </button>
             <a href="pricing.html" class="mobile-nav-tab" style="text-decoration:none;">
                 <i class="fas fa-coins" style="color:#f59e0b;"></i>
-                <span style="color:#f59e0b;">Credits</span>
+                <span data-i18n="side_buy_credits_short" style="color:#f59e0b;">Credits</span>
             </a>
             <button class="mobile-nav-tab" onclick="document.getElementById('user-menu-btn').click()">
                 <i class="fas fa-user-circle"></i>
-                <span>Account</span>
+                <span data-i18n="side_account_short">Account</span>
             </button>
         </div>
     </nav>
@@ -1957,6 +2022,8 @@
                 nav_about: "About",
                 side_pdf_studio: "PDF Studio",
                 side_buy_credits: "Buy OCR Credits",
+                side_buy_credits_short: "Credits",
+                side_account_short: "Account",
                 side_section_tools: "Tools",
                 side_section_account: "Account",
                 upsell_text: "You've bought multiple page packs — a Pro subscription gives unlimited scans for less.",
@@ -2034,6 +2101,8 @@
                 nav_about: "من نحن",
                 side_pdf_studio: "استوديو PDF",
                 side_buy_credits: "شراء رصيد مسح",
+                side_buy_credits_short: "رصيد",
+                side_account_short: "حسابي",
                 side_section_tools: "الأدوات",
                 side_section_account: "الحساب",
                 upsell_text: "اشتريت عدة حزم صفحات — اشتراك Pro يمنحك مسح غير محدود بأقل.",
