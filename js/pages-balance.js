@@ -119,61 +119,50 @@ export async function useOnePage(uid) {
     }
 }
 
-// ─── Free Tier: 10 scans/month ──────────────────────────────────────
+// ─── Free Trial: 10 scans one-time during 3-day trial ──────────────
 
-const FREE_MONTHLY_SCANS = 10;
+const FREE_TRIAL_SCANS = 10;
 
 /**
- * Get remaining free scans for this month. Resets on the 1st.
+ * Get remaining trial scans. One-time allowance, never resets.
  * @param {string} uid - Firebase UID
- * @returns {Promise<number>} remaining free scans (0–10)
+ * @returns {Promise<number>} remaining trial scans (0–10)
  */
 export async function getFreeScansRemaining(uid) {
     try {
         const userRef = doc(db, 'users', uid);
         const userSnap = await getDoc(userRef);
-        if (!userSnap.exists()) return FREE_MONTHLY_SCANS;
+        if (!userSnap.exists()) return FREE_TRIAL_SCANS;
 
         const data = userSnap.data();
-        const currentMonth = new Date().toISOString().slice(0, 7); // "2026-10"
-
-        // Reset if new month
-        if (data.freeScansResetMonth !== currentMonth) {
-            return FREE_MONTHLY_SCANS;
-        }
-
-        const used = data.freeScansUsed || 0;
-        return Math.max(0, FREE_MONTHLY_SCANS - used);
+        const used = data.trialScansUsed || 0;
+        return Math.max(0, FREE_TRIAL_SCANS - used);
     } catch (error) {
-        console.error('Error getting free scans:', error);
+        console.error('Error getting trial scans:', error);
         return 0;
     }
 }
 
 /**
- * Use one free scan. Returns remaining free scans after deduction.
+ * Use one trial scan. Returns remaining scans after deduction.
+ * Only works during active trial period.
  * @param {string} uid - Firebase UID
- * @returns {Promise<number>} remaining free scans (-1 if failed)
+ * @returns {Promise<number>} remaining trial scans (-1 if failed)
  */
 export async function useOneFreeScan(uid) {
     try {
         const userRef = doc(db, 'users', uid);
         const userSnap = await getDoc(userRef);
-        const currentMonth = new Date().toISOString().slice(0, 7);
 
         let used = 0;
         if (userSnap.exists()) {
-            const data = userSnap.data();
-            if (data.freeScansResetMonth === currentMonth) {
-                used = data.freeScansUsed || 0;
-            }
+            used = userSnap.data().trialScansUsed || 0;
         }
 
-        if (used >= FREE_MONTHLY_SCANS) return 0;
+        if (used >= FREE_TRIAL_SCANS) return 0;
 
         const updateData = {
-            freeScansUsed: used + 1,
-            freeScansResetMonth: currentMonth,
+            trialScansUsed: used + 1,
         };
 
         if (userSnap.exists()) {
@@ -182,11 +171,11 @@ export async function useOneFreeScan(uid) {
             await setDoc(userRef, { ocrPagesBalance: 0, ocrPagesTotal: 0, ...updateData });
         }
 
-        const remaining = FREE_MONTHLY_SCANS - (used + 1);
-        console.log(`Free scan used. Remaining: ${remaining}`);
+        const remaining = FREE_TRIAL_SCANS - (used + 1);
+        console.log(`Trial scan used. Remaining: ${remaining}`);
         return remaining;
     } catch (error) {
-        console.error('Error using free scan:', error);
+        console.error('Error using trial scan:', error);
         return -1;
     }
 }

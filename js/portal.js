@@ -245,7 +245,7 @@ auth.onAuthStateChanged(async (user) => {
             }
 
         } else {
-            // ── FREE user (10 scans/month) ──
+            // ── FREE user ──
             window.userTier = 'free';
             window.isProUser = false;
             window.isPagesUser = false;
@@ -253,12 +253,12 @@ auth.onAuthStateChanged(async (user) => {
             window.freeScansLeft = freeScansLeft;
             localStorage.setItem('isPro', 'false');
 
-            // ── 3-day Pro trial check ──
+            // ── 3-day trial check ──
             try {
                 const createdAt = await getUserCreatedAt(user.uid);
                 if (createdAt) {
                     const daysSinceSignup = (Date.now() - createdAt.getTime()) / 86400000;
-                    if (daysSinceSignup <= 3) {
+                    if (daysSinceSignup <= 3 && freeScansLeft > 0) {
                         window.isTrialActive = true;
                         window.trialDaysLeft = Math.ceil(3 - daysSinceSignup);
                     }
@@ -267,21 +267,21 @@ auth.onAuthStateChanged(async (user) => {
 
             const badge = document.createElement('span');
             badge.className = 'ml-2 bg-gray-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider';
-            badge.textContent = 'FREE';
             userEmailDisplay.appendChild(badge);
 
-            if (tierLine) {
-                tierLine.innerHTML = `<span class="inline-flex items-center gap-1.5 text-sm text-gray-500 font-medium"><i class="fas fa-bolt text-amber-500 text-xs"></i> <span id="free-scans-count">${freeScansLeft}</span>/10 free scans this month · <a href="pricing.html" class="text-blue-600 hover:underline font-semibold">Upgrade</a></span>`;
-            }
-
-            if (statusDisplay) {
-                statusDisplay.textContent = `${freeScansLeft}/10 scans`;
-                statusDisplay.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-600 cursor-pointer';
-                statusDisplay.onclick = () => { window.location.href = 'pricing.html'; };
-            }
-
-            // Apply free-tier body class (or trial)
             if (window.isTrialActive) {
+                // ── Active trial: show trial scans remaining ──
+                badge.textContent = 'TRIAL';
+                badge.className = 'ml-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider';
+
+                if (tierLine) {
+                    tierLine.innerHTML = `<span class="inline-flex items-center gap-1.5 text-sm text-amber-600 font-medium"><i class="fas fa-gift text-xs"></i> Trial: <span id="free-scans-count">${freeScansLeft}</span>/10 scans · ${window.trialDaysLeft} day${window.trialDaysLeft !== 1 ? 's' : ''} left</span>`;
+                }
+                if (statusDisplay) {
+                    statusDisplay.textContent = `Trial · ${freeScansLeft} scans`;
+                    statusDisplay.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-700';
+                }
+
                 document.body.classList.remove('free-tier');
                 document.body.classList.add('trial-active');
                 const trialBanner = document.getElementById('trial-banner');
@@ -290,6 +290,18 @@ auth.onAuthStateChanged(async (user) => {
                     trialBanner.classList.remove('hidden');
                 }
             } else {
+                // ── Trial expired or scans exhausted: must upgrade ──
+                badge.textContent = 'FREE';
+
+                if (tierLine) {
+                    tierLine.innerHTML = `<span class="inline-flex items-center gap-1.5 text-sm text-gray-500 font-medium"><i class="fas fa-lock text-xs"></i> Trial ended · <a href="pricing.html" class="text-blue-600 hover:underline font-semibold">Upgrade to continue</a></span>`;
+                }
+                if (statusDisplay) {
+                    statusDisplay.textContent = 'Upgrade';
+                    statusDisplay.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-600 cursor-pointer';
+                    statusDisplay.onclick = () => { window.location.href = 'pricing.html'; };
+                }
+
                 document.body.classList.add('free-tier');
                 document.body.classList.remove('trial-active');
             }
@@ -705,18 +717,33 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
             const tier = window.userTier || 'free';
 
             if (tier === 'free' && !window.isTrialActive) {
-                // Free user (not in trial): check if they have scans left
+                // Trial expired or scans exhausted — must upgrade
+                quill.setText('');
+                quill.clipboard.dangerouslyPasteHTML(0,
+                    '<p><strong style="color:#dc2626;">Your free trial has ended.</strong></p>' +
+                    '<p><br></p><p>Upgrade to Pro for unlimited scans, AI features, and all export formats:</p>' +
+                    '<p><br></p><p><a href="pricing.html" style="color:#2563eb;font-weight:700;">View Plans & Pricing →</a></p>'
+                );
+                textContent.original = '';
+                textContent.refined = '';
+                setTimeout(() => showProNudge(), 1000);
+
+            } else if (tier === 'free' && window.isTrialActive) {
+                // Active trial: deduct from 10 trial scans
                 if (window.freeScansLeft <= 0) {
+                    window.isTrialActive = false;
+                    document.body.classList.add('free-tier');
+                    document.body.classList.remove('trial-active');
                     quill.setText('');
                     quill.clipboard.dangerouslyPasteHTML(0,
-                        '<p><strong style="color:#dc2626;">You\'ve used all 10 free scans this month.</strong></p>' +
-                        '<p><br></p><p>Your free scans reset on the 1st of each month, or upgrade now for more:</p>' +
+                        '<p><strong style="color:#dc2626;">You\'ve used all 10 trial scans.</strong></p>' +
+                        '<p><br></p><p>Upgrade to Pro for unlimited scans and all features:</p>' +
                         '<p><br></p><p><a href="pricing.html" style="color:#2563eb;font-weight:700;">View Plans & Pricing →</a></p>'
                     );
                     textContent.original = '';
                     textContent.refined = '';
+                    setTimeout(() => showProNudge(), 1000);
                 } else {
-                    // Show full result, deduct one free scan
                     quill.setText(fullText);
                     applyContentDirection(fullText);
                     textContent.original = fullText;
@@ -730,23 +757,18 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         if (countEl) countEl.textContent = remaining;
 
                         const statusDisplay = document.getElementById('user-status-display');
-                        if (statusDisplay) statusDisplay.textContent = `Free · ${remaining}/10 scans`;
+                        if (statusDisplay) statusDisplay.textContent = `Trial · ${remaining} scans`;
 
                         if (remaining === 0) {
-                            setTimeout(() => showToast('That was your last free scan this month. Upgrade or come back next month!', 'warning', 5000), 500);
-                        }
-
-                        if (remaining === 5) {
-                            setTimeout(() => showToast('You\'ve used 5 of 10 free scans this month. Pro users scan unlimited.', 'info', 5000), 1000);
+                            setTimeout(() => showToast('That was your last trial scan. Upgrade for unlimited!', 'warning', 5000), 500);
+                        } else if (remaining === 5) {
+                            setTimeout(() => showToast('5 trial scans remaining. Upgrade for unlimited scanning.', 'info', 5000), 1000);
                         } else if (remaining === 2) {
-                            setTimeout(() => showToast('Only 2 free scans left! Upgrade for unlimited scanning.', 'warning', 6000), 1000);
+                            setTimeout(() => showToast('Only 2 trial scans left! Upgrade now.', 'warning', 6000), 1000);
                         }
                     }
 
-                    // Show upgrade nudge after free scan
-                    if (!window.isTrialActive) {
-                        setTimeout(() => showProNudge(), 2000);
-                    }
+                    setTimeout(() => showProNudge(), 2000);
                 }
 
             } else if (tier === 'pages') {
@@ -773,7 +795,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         localStorage.setItem('isPro', 'false');
                         // Fall back to free tier
                         window.freeScansLeft = await getFreeScansRemaining(auth.currentUser.uid);
-                        setTimeout(() => showToast('You\'ve used all your purchased pages. You now have ' + window.freeScansLeft + ' free scans left this month.', 'warning', 5000), 500);
+                        setTimeout(() => showToast('You\'ve used all your purchased pages. Purchase more or upgrade to Pro for unlimited.', 'warning', 5000), 500);
                     }
                 }
 
@@ -2194,7 +2216,8 @@ async function processBatchOCR(pdfDoc, pageNumbers) {
                     break;
                 }
             }
-        } else if (tier === 'free' && !window.isTrialActive && auth.currentUser) {
+        } else if (tier === 'free' && window.isTrialActive && auth.currentUser) {
+            // Trial user: deduct from 10 trial scans
             for (let i = 0; i < totalPages; i++) {
                 if (window.freeScansLeft <= 0) break;
                 const remaining = await useOneFreeScan(auth.currentUser.uid);
