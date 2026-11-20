@@ -1204,6 +1204,85 @@
 
         body.dark-mode .share-modal-content { background: #1e293b; color: #e2e8f0; }
         body.dark-mode .share-link-box input { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+
+        /* ===== PRO GATING BADGES ===== */
+        body.free-tier .pro-gated {
+            position: relative;
+        }
+        body.free-tier .pro-gated::after {
+            content: 'PRO';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 7px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+            line-height: 1.2;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+            z-index: 5;
+        }
+        body.free-tier .pro-gated-row::after {
+            content: 'PRO';
+            margin-left: 8px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 4px;
+            line-height: 1.4;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        /* ===== PRO NUDGE BOTTOM SHEET ===== */
+        #pro-nudge-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: white;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+            padding: 28px 24px 32px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #pro-nudge-sheet.show {
+            transform: translateY(0);
+        }
+        #pro-nudge-sheet .nudge-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: -1;
+        }
+        body.dark-mode #pro-nudge-sheet {
+            background: #1e293b;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+        }
+
+        /* ===== TRIAL BANNER ===== */
+        #trial-banner {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            color: #1c1917;
+            text-align: center;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        #trial-banner a {
+            color: #1e40af;
+            font-weight: 700;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -1309,6 +1388,12 @@
             </div>
         </div>
     </header>
+
+    <!-- ===== TRIAL BANNER ===== -->
+    <div id="trial-banner" class="hidden">
+        Pro Trial: <span class="trial-days">3</span> days left — Enjoy all features free!
+        <a href="pricing.html" style="margin-left:8px;">Upgrade Now</a>
+    </div>
 
     <!-- ===== UPSELL BANNER (shown to repeat page-pack buyers) ===== -->
     <div id="upsell-banner" class="hidden items-center justify-between gap-3 px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-300 text-gray-900 text-sm font-medium flex-shrink-0" style="z-index:25;">
@@ -1531,22 +1616,22 @@
                                     <span class="hidden sm:inline" data-i18n="res_new">New Scan</span>
                                 </button>
                                 <button id="btn-refine"
-                                    class="pill-btn bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200">
+                                    class="pill-btn bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 pro-gated">
                                     <i class="fas fa-wand-magic-sparkles text-xs"></i>
                                     <span class="hidden sm:inline">AI Refine</span>
                                 </button>
                                 <button id="btn-summarize"
-                                    class="pill-btn bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200">
+                                    class="pill-btn bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 pro-gated">
                                     <i class="fas fa-magic text-xs"></i>
                                     <span class="hidden sm:inline" data-i18n="res_summarize">Summarize</span>
                                 </button>
                                 <button id="btn-translate"
-                                    class="pill-btn bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
+                                    class="pill-btn bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 pro-gated">
                                     <i class="fas fa-language text-xs"></i>
                                     <span class="hidden sm:inline" data-i18n="res_translate">Translate</span>
                                 </button>
                                 <button id="btn-extract-tables"
-                                    class="pill-btn bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200">
+                                    class="pill-btn bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 pro-gated">
                                     <i class="fas fa-table text-xs"></i>
                                     <span class="hidden sm:inline">Tables</span>
                                 </button>
@@ -1554,7 +1639,7 @@
                                 <!-- Template picker (dropdown on refine) -->
                                 <div class="relative">
                                     <button id="btn-template-picker"
-                                        class="pill-btn bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200"
+                                        class="pill-btn bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 pro-gated"
                                         title="AI Templates">
                                         <i class="fas fa-layer-group text-xs"></i>
                                         <span class="hidden sm:inline">Template</span>
@@ -1605,9 +1690,9 @@
                                     </button>
                                     <div id="export-dropdown">
                                         <button data-format="txt"><i class="fas fa-file-alt"></i> Plain Text (.txt)</button>
-                                        <button data-format="md"><i class="fab fa-markdown"></i> Markdown (.md)</button>
-                                        <button data-format="docx"><i class="fas fa-file-word"></i> Word (.docx)</button>
-                                        <button data-format="pdf"><i class="fas fa-file-pdf"></i> PDF (.pdf)</button>
+                                        <button data-format="md" class="pro-gated-row"><i class="fab fa-markdown"></i> Markdown (.md)</button>
+                                        <button data-format="docx" class="pro-gated-row"><i class="fas fa-file-word"></i> Word (.docx)</button>
+                                        <button data-format="pdf" class="pro-gated-row"><i class="fas fa-file-pdf"></i> PDF (.pdf)</button>
                                     </div>
                                 </div>
                                 <button id="btn-print"
@@ -1789,74 +1874,74 @@
             </button>
 
             <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-crown text-2xl"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900" data-i18n="modal_title">Upgrade to Pro</h2>
-                <p class="text-gray-500 mt-2 text-sm" data-i18n="modal_desc">Unlock unlimited PDF OCR, Summaries, and Translations.</p>
+                <p class="text-gray-500 mt-2 text-sm" data-i18n="modal_desc">Unlock unlimited scans and all premium features.</p>
             </div>
 
             <div class="space-y-3 mb-6">
                 <div class="flex items-center gap-3">
-                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    <div class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-amber-600 text-xs"></i>
                     </div>
-                    <p class="text-sm text-gray-700" data-i18n="modal_feat1">Unlimited PDF Pages processing</p>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat1">Unlimited scans — no monthly limits</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    <div class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-amber-600 text-xs"></i>
                     </div>
-                    <p class="text-sm text-gray-700" data-i18n="modal_feat2">AI Summarization (GPT-4)</p>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat2">AI Refine, Translate & Summarize</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    <div class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-amber-600 text-xs"></i>
                     </div>
-                    <p class="text-sm text-gray-700" data-i18n="modal_feat3">Instant Translation to 50+ languages</p>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat3">Batch PDF scanning & all export formats</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-check text-green-500 text-xs"></i>
+                    <div class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-amber-600 text-xs"></i>
                     </div>
-                    <p class="text-sm text-gray-700" data-i18n="modal_feat4">Priority Processing Speed</p>
+                    <p class="text-sm text-gray-700" data-i18n="modal_feat4">Instant results, no watermarks</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3 mb-5">
                 <!-- Monthly -->
                 <div id="plan-monthly"
-                    class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-400 transition relative">
+                    class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-amber-400 transition relative">
                     <div class="text-center">
                         <h3 class="font-bold text-gray-700 text-sm" data-i18n="modal_monthly">Monthly</h3>
-                        <div class="text-2xl font-bold text-blue-600 my-1">$4.99</div>
+                        <div class="text-2xl font-bold text-gray-800 my-1">$9.99</div>
                         <span class="text-xs text-gray-400">/month</span>
                     </div>
                     <div class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                        <div class="w-2 h-2 rounded-full bg-blue-600 hidden"></div>
+                        <div class="w-2 h-2 rounded-full bg-amber-500 hidden"></div>
                     </div>
                 </div>
 
                 <!-- Yearly -->
                 <div id="plan-yearly"
-                    class="border-2 border-blue-600 bg-blue-50 rounded-xl p-4 cursor-pointer relative shadow-sm">
-                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    class="border-2 border-amber-500 bg-amber-50 rounded-xl p-4 cursor-pointer relative shadow-sm">
+                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"
                         data-i18n="modal_save">
-                        SAVE 33%
+                        SAVE 58%
                     </div>
                     <div class="text-center">
                         <h3 class="font-bold text-gray-800 text-sm" data-i18n="modal_yearly">Yearly</h3>
-                        <div class="text-2xl font-bold text-blue-600 my-1">$39.99</div>
-                        <span class="text-xs text-gray-500">/year</span>
+                        <div class="text-2xl font-bold text-amber-600 my-1">$49.99</div>
+                        <span class="text-xs text-gray-500"><s>$9.99/mo</s> → $4.17/mo</span>
                     </div>
-                    <div class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-blue-600 flex items-center justify-center">
-                        <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                    <div class="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-amber-500 flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-amber-500"></div>
                     </div>
                 </div>
             </div>
 
             <button id="btn-subscribe"
-                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition hover:-translate-y-0.5 transform text-sm"
+                class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transition hover:-translate-y-0.5 transform text-sm"
                 data-i18n="modal_continue">
                 Continue to Checkout
             </button>
@@ -2002,14 +2087,14 @@
                 footer_privacy: "Privacy Policy",
 
                 modal_title: "Upgrade to Pro",
-                modal_desc: "Unlock unlimited PDF OCR, Summaries, and Translations.",
-                modal_feat1: "Unlimited PDF Pages processing",
-                modal_feat2: "AI Summarization (GPT-4)",
-                modal_feat3: "Instant Translation to 50+ languages",
-                modal_feat4: "Priority Processing Speed",
+                modal_desc: "Unlock unlimited scans and all premium features.",
+                modal_feat1: "Unlimited scans — no monthly limits",
+                modal_feat2: "AI Refine, Translate & Summarize",
+                modal_feat3: "Batch PDF scanning & all export formats",
+                modal_feat4: "Instant results, no watermarks",
                 modal_monthly: "Monthly",
                 modal_yearly: "Yearly",
-                modal_save: "SAVE 33%",
+                modal_save: "SAVE 58%",
                 modal_continue: "Continue to Checkout",
                 modal_secure: "Secure payment via Paddle. Cancel anytime.",
 
@@ -2081,14 +2166,14 @@
                 footer_privacy: "سياسة الخصوصية",
 
                 modal_title: "ترقية إلى المحترف",
-                modal_desc: "افتح ميزات غير محدودة: PDF OCR، تلخيص، وترجمة.",
-                modal_feat1: "معالجة عدد غير محدود من صفحات PDF",
-                modal_feat2: "تلخيص ذكي (GPT-4)",
-                modal_feat3: "ترجمة فورية لأكثر من 50 لغة",
-                modal_feat4: "أولوية في سرعة المعالجة",
+                modal_desc: "افتح مسح غير محدود وجميع المميزات المدفوعة.",
+                modal_feat1: "مسح غير محدود — بدون حد شهري",
+                modal_feat2: "تحسين وترجمة وتلخيص بالذكاء الاصطناعي",
+                modal_feat3: "مسح PDF متعدد الصفحات وجميع صيغ التصدير",
+                modal_feat4: "نتائج فورية، بدون علامات مائية",
                 modal_monthly: "شهري",
                 modal_yearly: "سنوي",
-                modal_save: "وفر 33%",
+                modal_save: "وفر 58%",
                 modal_continue: "متابعة للدفع",
                 modal_secure: "دفع آمن عبر Paddle. يمكنك الإلغاء في أي وقت.",
 
@@ -2358,6 +2443,53 @@
         <div id="chat-input-area">
             <input id="chat-input" type="text" placeholder="Ask a question..." autocomplete="off">
             <button id="chat-send-btn"><i class="fas fa-paper-plane text-sm"></i></button>
+        </div>
+    </div>
+
+    <!-- ===== PRO NUDGE BOTTOM SHEET ===== -->
+    <div id="pro-nudge-sheet">
+        <div class="nudge-backdrop" onclick="document.getElementById('pro-nudge-sheet').classList.remove('show'); sessionStorage.setItem('proNudgeDismissed','1');"></div>
+        <div style="max-width:480px;margin:0 auto;text-align:center;">
+            <div style="width:48px;height:48px;background:linear-gradient(135deg,#fbbf24,#f59e0b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                <i class="fas fa-crown" style="color:white;font-size:20px;"></i>
+            </div>
+            <h3 style="font-size:20px;font-weight:800;color:#1e293b;margin:0 0 6px;">Unlock the Full Experience</h3>
+            <p style="font-size:14px;color:#64748b;margin:0 0 20px;">Upgrade to Pro and get everything Arabic OCR has to offer.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:20px;">
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                    <i class="fas fa-infinity" style="color:#f59e0b;width:18px;text-align:center;"></i> Unlimited scans — no monthly limits
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                    <i class="fas fa-wand-magic-sparkles" style="color:#f59e0b;width:18px;text-align:center;"></i> AI Refine, Translate & Summarize
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                    <i class="fas fa-file-pdf" style="color:#f59e0b;width:18px;text-align:center;"></i> Batch PDF scanning & all export formats
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                    <i class="fas fa-bolt" style="color:#f59e0b;width:18px;text-align:center;"></i> Instant results — no waiting
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;">
+                <div style="flex:1;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Monthly</div>
+                    <div style="font-size:22px;font-weight:800;color:#1e293b;">$9.99</div>
+                    <div style="font-size:11px;color:#94a3b8;">/month</div>
+                </div>
+                <div style="flex:1;border:2px solid #f59e0b;border-radius:12px;padding:12px;text-align:center;background:#fffbeb;position:relative;">
+                    <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#f59e0b;color:white;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;">SAVE 58%</div>
+                    <div style="font-size:11px;color:#92400e;font-weight:700;text-transform:uppercase;">Yearly</div>
+                    <div style="font-size:22px;font-weight:800;color:#1e293b;">$49.99</div>
+                    <div style="font-size:11px;color:#94a3b8;"><s>$9.99/mo</s> → $4.17/mo</div>
+                </div>
+            </div>
+            <button onclick="document.getElementById('pro-nudge-sheet').classList.remove('show'); sessionStorage.setItem('proNudgeDismissed','1'); document.getElementById('pricing-modal').classList.remove('hidden');"
+                style="width:100%;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-weight:700;font-size:15px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">
+                Upgrade Now
+            </button>
+            <button onclick="document.getElementById('pro-nudge-sheet').classList.remove('show'); sessionStorage.setItem('proNudgeDismissed','1');"
+                style="width:100%;padding:10px;background:transparent;color:#94a3b8;font-size:13px;border:none;cursor:pointer;">
+                Maybe Later
+            </button>
         </div>
     </div>
 

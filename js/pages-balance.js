@@ -190,3 +190,24 @@ export async function useOneFreeScan(uid) {
         return -1;
     }
 }
+
+/**
+ * Get user account creation date from Firestore.
+ * @param {string} uid - Firebase UID
+ * @returns {Promise<Date|null>} creation date or null
+ */
+export async function getUserCreatedAt(uid) {
+    try {
+        const userRef = doc(db, 'users', uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            if (data.createdAt?.toDate) return data.createdAt.toDate();
+            if (data.createdAt) return new Date(data.createdAt);
+        }
+        return null;
+    } catch (error) {
+        console.error('Error getting user createdAt:', error);
+        return null;
+    }
+}

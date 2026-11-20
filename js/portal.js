@@ -1,10 +1,32 @@
 import { monitorAuthState, logoutUser } from './auth.js';
 import { checkout } from './paddle-payment.js';
 import { app, auth, analytics, logEvent, errorReason, errorMessage, fileSizeBucket } from '../firebase-analytics.js';
-import { getPagesBalance, useOnePage, getFreeScansRemaining, useOneFreeScan } from './pages-balance.js';
+import { getPagesBalance, useOnePage, getFreeScansRemaining, useOneFreeScan, getUserCreatedAt } from './pages-balance.js';
 
 
 const GEMINI_OCR_PROXY = "https://arabicocr.zczvwz6pw7.workers.dev";
+
+// ── Feature Gating ──────────────────────────────────────────────
+window.isTrialActive = false;
+window.trialDaysLeft = 0;
+
+function isFeatureLocked() {
+    if (window.isTrialActive) return false;
+    return window.userTier === 'free';
+}
+
+function showPricingModal() {
+    const modal = document.getElementById('pricing-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function showProNudge() {
+    if (sessionStorage.getItem('proNudgeDismissed')) return;
+    const sheet = document.getElementById('pro-nudge-sheet');
+    if (sheet) {
+        setTimeout(() => sheet.classList.add('show'), 500);
+    }
+}
 
 // Initialize Authentication Guard
 monitorAuthState(true); // Redirect to login if user not found
@@ -231,6 +253,18 @@ auth.onAuthStateChanged(async (user) => {
             window.freeScansLeft = freeScansLeft;
             localStorage.setItem('isPro', 'false');
 
+            // ── 3-day Pro trial check ──
+            try {
+                const createdAt = await getUserCreatedAt(user.uid);
+                if (createdAt) {
+                    const daysSinceSignup = (Date.now() - createdAt.getTime()) / 86400000;
+                    if (daysSinceSignup <= 3) {
+                        window.isTrialActive = true;
+                        window.trialDaysLeft = Math.ceil(3 - daysSinceSignup);
+                    }
+                }
+            } catch (e) { console.error('Trial check failed:', e); }
+
             const badge = document.createElement('span');
             badge.className = 'ml-2 bg-gray-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider';
             badge.textContent = 'FREE';
@@ -244,6 +278,20 @@ auth.onAuthStateChanged(async (user) => {
                 statusDisplay.textContent = `${freeScansLeft}/10 scans`;
                 statusDisplay.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-600 cursor-pointer';
                 statusDisplay.onclick = () => { window.location.href = 'pricing.html'; };
+            }
+
+            // Apply free-tier body class (or trial)
+            if (window.isTrialActive) {
+                document.body.classList.remove('free-tier');
+                document.body.classList.add('trial-active');
+                const trialBanner = document.getElementById('trial-banner');
+                if (trialBanner) {
+                    trialBanner.querySelector('.trial-days').textContent = window.trialDaysLeft;
+                    trialBanner.classList.remove('hidden');
+                }
+            } else {
+                document.body.classList.add('free-tier');
+                document.body.classList.remove('trial-active');
             }
         }
 
@@ -520,6 +568,10 @@ async function renderAvailablePdfPages(file) {
                 if (selectedPages.has(pageNum)) {
                     selectedPages.delete(pageNum);
                 } else {
+                    if (window.userTier === 'free' && !window.isTrialActive && selectedPages.size >= 1) {
+                        showToast('Upgrade to Pro for batch scanning', 'warning', 4000);
+                        return;
+                    }
                     selectedPages.add(pageNum);
                 }
                 updateBatchSelectionUI();
@@ -633,6 +685,12 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
             ]
         }]);
 
+        // Free tier delay — Pro users get instant results
+        if (window.userTier === 'free' && !window.isTrialActive) {
+            updateProgressUI(90);
+            if (progressText) progressText.innerText = 'Pro users get instant results ⚡';
+            await new Promise(r => setTimeout(r, 3000));
+        }
         updateProgressUI(100); // Complete
         clearInterval(progressInterval);
 
@@ -677,6 +735,17 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         if (remaining === 0) {
                             setTimeout(() => showToast('That was your last free scan this month. Upgrade or come back next month!', 'warning', 5000), 500);
                         }
+
+                        if (remaining === 5) {
+                            setTimeout(() => showToast('You\'ve used 5 of 10 free scans this month. Pro users scan unlimited.', 'info', 5000), 1000);
+                        } else if (remaining === 2) {
+                            setTimeout(() => showToast('Only 2 free scans left! Upgrade for unlimited scanning.', 'warning', 6000), 1000);
+                        }
+                    }
+
+                    // Show upgrade nudge after free scan
+                    if (!window.isTrialActive) {
+                        setTimeout(() => showProNudge(), 2000);
                     }
                 }
 
@@ -1271,6 +1340,7 @@ Formatting rules:
 
 if (btnRefine) {
     btnRefine.addEventListener('click', async () => {
+        if (isFeatureLocked()) { showPricingModal(); return; }
         const textToRefine = textContent.original || quill.getText().trim();
         if (!textToRefine || textToRefine.length < 10) return showToast("Please extract text first.", 'warning');
 
@@ -1340,6 +1410,7 @@ function markdownToQuillHtml(md) {
 
 // Summarize Logic
 btnSummarize.addEventListener('click', async () => {
+    if (isFeatureLocked()) { showPricingModal(); return; }
     // Ensure we have original text
     if (!textContent.original && quill.getText().trim().length > 0) textContent.original = quill.getText();
     const textToProcess = textContent.original || quill.getText();
@@ -1381,6 +1452,7 @@ btnSummarize.addEventListener('click', async () => {
 // Translate Logic
 if (btnTranslate) {
     btnTranslate.addEventListener('click', () => {
+        if (isFeatureLocked()) { showPricingModal(); return; }
         // Ensure we have original text
         if (!textContent.original && quill.getText().trim().length > 0) textContent.original = quill.getText();
         const textToProcess = textContent.original || quill.getText();
@@ -1782,6 +1854,7 @@ if (exportDropdown) {
         if (!btn) return;
 
         const format = btn.dataset.format;
+        if (format !== 'txt' && isFeatureLocked()) { showPricingModal(); return; }
         const text = quill.getText().trim();
         const html = quill.root.innerHTML;
         const filename = (filenameDisplay?.textContent || 'result').replace(/\.[^.]+$/, '');
@@ -1798,7 +1871,11 @@ if (exportDropdown) {
         try {
             switch (format) {
                 case 'txt':
-                    downloadBlob(new Blob([text], { type: 'text/plain' }), `${filename}.txt`);
+                    let exportText = text;
+                    if (window.userTier === 'free' && !window.isTrialActive) {
+                        exportText += '\n\n--- Exported with Arabic OCR (Free) | arabic-ocr.com ---';
+                    }
+                    downloadBlob(new Blob([exportText], { type: 'text/plain' }), `${filename}.txt`);
                     showToast('Downloaded as TXT', 'success');
                     break;
 
@@ -2019,6 +2096,11 @@ function updateBatchSelectionUI() {
 if (pdfSelectAll) {
     pdfSelectAll.addEventListener('change', () => {
         if (!batchPdfDoc) return;
+        if (window.userTier === 'free' && !window.isTrialActive) {
+            pdfSelectAll.checked = false;
+            showToast('Upgrade to Pro for batch scanning', 'warning', 4000);
+            return;
+        }
         if (pdfSelectAll.checked) {
             for (let i = 1; i <= batchPdfDoc.numPages; i++) selectedPages.add(i);
         } else {
@@ -2181,6 +2263,7 @@ function appendChatMessage(role, text) {
 }
 
 async function sendChatQuestion() {
+    if (isFeatureLocked()) { showPricingModal(); return; }
     const question = chatInput.value.trim();
     if (!question) return;
 
@@ -2270,6 +2353,7 @@ let extractedTablesHtml = '';
 
 if (btnExtractTables) {
     btnExtractTables.addEventListener('click', async () => {
+        if (isFeatureLocked()) { showPricingModal(); return; }
         const docText = textContent.original || quill.getText().trim();
         if (!docText || docText.length < 10) {
             return showToast('Please extract text first.', 'warning');
@@ -2737,6 +2821,7 @@ function getTemplatePrompt(isArabic) {
 
 if (btnTemplatePicker) {
     btnTemplatePicker.addEventListener('click', (e) => {
+        if (isFeatureLocked()) { showPricingModal(); return; }
         e.stopPropagation();
         templateDropdown.classList.toggle('show');
     });
