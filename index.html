@@ -106,8 +106,10 @@
             "https://arabic-ocr.com/",
             "https://play.google.com/store/apps/details?id=com.kanzati.arabicocr",
             "https://apps.apple.com/app/id6745792738",
+            "https://apps.apple.com/us/app/arabic-ocr/id6745792738",
             "https://apps.microsoft.com/detail/9P2NRS4S8ND6",
-            "https://www.linkedin.com/in/ziad-khazzaka-788526362"
+            "https://www.linkedin.com/in/ziad-khazzaka-788526362",
+            "https://www.youtube.com/@ArabicOCR"
           ],
           "founder": {
             "@type": "Person",
@@ -1850,15 +1852,17 @@ Your job:
     }
     </script>
 
-    <!-- APP SCHEMAS: iOS + Android + macOS + WebApp (for Google App Rich Results) -->
+    <!-- APP SCHEMAS: iOS + Android + macOS + Windows + WebApp (for Google Knowledge Panel & Rich Results) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "SoftwareApplication",
+          "@id": "https://arabic-ocr.com/#ios-app",
           "name": "Arabic OCR",
-          "operatingSystem": "IOS",
+          "alternateName": "Arabic OCR - Text from Images",
+          "operatingSystem": "iOS 16.0+",
           "applicationCategory": "UtilitiesApplication",
           "applicationSubCategory": "OCR & Text Recognition",
           "url": "https://apps.apple.com/app/id6745792738",
@@ -1870,10 +1874,10 @@ Your job:
             "https://arabic-ocr.com/sc2.webp",
             "https://arabic-ocr.com/sc3.webp"
           ],
-          "description": "Extract printed and handwritten Arabic text from images and PDFs using advanced AI. Uses Apple's on-device LLM Vision for offline, fully private OCR. Supports Arabic, Urdu, and Persian.",
-          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Apple Local LLM Vision, Offline Mode, 100% Private Processing, Arabic Text Extraction",
+          "description": "Extract printed and handwritten Arabic text from images and PDFs using advanced AI. Uses Apple's on-device Vision for offline, fully private OCR. Supports Arabic, Urdu, and Persian.",
+          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Apple On-Device Vision, Offline Mode, 100% Private Processing",
           "softwareVersion": "3.7",
-          "datePublished": "2023-01-01",
+          "datePublished": "2025-01-01",
           "inLanguage": ["ar", "en"],
           "aggregateRating": {
             "@type": "AggregateRating",
@@ -1889,18 +1893,16 @@ Your job:
             "availability": "https://schema.org/InStock",
             "category": "free"
           },
-          "author": {
-            "@type": "Person",
-            "name": "Ziad Khazzaka"
-          },
-          "publisher": {
-            "@id": "https://www.kanzati.com"
-          }
+          "author": { "@id": "https://arabic-ocr.com/#developer" },
+          "publisher": { "@id": "https://www.kanzati.com" },
+          "sameAs": "https://apps.apple.com/app/id6745792738"
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://arabic-ocr.com/#android-app",
           "name": "Arabic OCR",
-          "operatingSystem": "ANDROID",
+          "alternateName": "Arabic OCR - Text from Images",
+          "operatingSystem": "Android 7.0+",
           "applicationCategory": "UtilitiesApplication",
           "applicationSubCategory": "OCR & Text Recognition",
           "url": "https://play.google.com/store/apps/details?id=com.kanzati.arabicocr",
@@ -1912,14 +1914,15 @@ Your job:
             "https://arabic-ocr.com/sc2.webp",
             "https://arabic-ocr.com/sc3.webp"
           ],
-          "description": "Extract printed and handwritten Arabic text from images and PDFs using advanced AI. Supports Arabic, Urdu, and Persian. Works offline.",
-          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Offline Mode, Arabic Text Extraction",
+          "description": "Extract printed and handwritten Arabic text from images and PDFs using advanced AI. Supports Arabic, Urdu, and Persian. Works offline with on-device processing.",
+          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Offline Mode, Arabic Text Extraction, On-Device AI",
           "softwareVersion": "3.4",
-          "datePublished": "2023-01-01",
+          "datePublished": "2025-01-01",
+          "inLanguage": ["ar", "en"],
           "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "2500",
+            "ratingValue": "3.5",
+            "ratingCount": "187",
             "bestRating": "5",
             "worstRating": "1"
           },
@@ -1930,18 +1933,16 @@ Your job:
             "availability": "https://schema.org/InStock",
             "category": "free"
           },
-          "author": {
-            "@type": "Person",
-            "name": "Ziad Khazzaka"
-          },
-          "publisher": {
-            "@id": "https://www.kanzati.com"
-          }
+          "author": { "@id": "https://arabic-ocr.com/#developer" },
+          "publisher": { "@id": "https://www.kanzati.com" },
+          "sameAs": "https://play.google.com/store/apps/details?id=com.kanzati.arabicocr"
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://arabic-ocr.com/#macos-app",
           "name": "Arabic OCR",
-          "operatingSystem": "MACOS",
+          "alternateName": "Arabic OCR for Mac",
+          "operatingSystem": "macOS 14.0+",
           "applicationCategory": "UtilitiesApplication",
           "applicationSubCategory": "OCR & Text Recognition",
           "url": "https://apps.apple.com/us/app/arabic-ocr/id6745792738",
@@ -1952,35 +1953,28 @@ Your job:
             "https://arabic-ocr.com/mac1.webp",
             "https://arabic-ocr.com/mac2.webp"
           ],
-          "description": "Native macOS app for extracting Arabic text from images and PDFs. Uses Apple's on-device LLM Vision, so documents are processed offline and never leave your Mac.",
-          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Apple Local LLM Vision, Offline Mode, 100% Private Processing, Native macOS Integration",
+          "description": "Native macOS app for extracting Arabic text from images and PDFs. Uses Apple's on-device Vision, so documents are processed offline and never leave your Mac.",
+          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Apple On-Device Vision, Offline Mode, 100% Private Processing, Native macOS Integration",
           "softwareVersion": "3.7",
+          "datePublished": "2025-01-01",
           "inLanguage": ["ar", "en"],
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "2500",
-            "bestRating": "5",
-            "worstRating": "1"
-          },
           "offers": {
             "@type": "Offer",
-            "price": "9.99",
+            "price": "0",
             "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock"
+            "availability": "https://schema.org/InStock",
+            "category": "free"
           },
-          "author": {
-            "@type": "Person",
-            "name": "Ziad Khazzaka"
-          },
-          "publisher": {
-            "@id": "https://www.kanzati.com"
-          }
+          "author": { "@id": "https://arabic-ocr.com/#developer" },
+          "publisher": { "@id": "https://www.kanzati.com" },
+          "sameAs": "https://apps.apple.com/us/app/arabic-ocr/id6745792738"
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://arabic-ocr.com/#windows-app",
           "name": "Arabic OCR",
-          "operatingSystem": "WINDOWS",
+          "alternateName": "Arabic OCR for Windows",
+          "operatingSystem": "Windows 10+",
           "applicationCategory": "UtilitiesApplication",
           "applicationSubCategory": "OCR & Text Recognition",
           "url": "https://apps.microsoft.com/detail/9P2NRS4S8ND6",
@@ -1993,8 +1987,8 @@ Your job:
             "https://arabic-ocr.com/win3.jpg",
             "https://arabic-ocr.com/win4.jpg"
           ],
-          "description": "Native Windows app for extracting printed and handwritten Arabic text from images and PDFs. Runs a local on-device OCR model, so your files are never uploaded — 100% private and works offline. Available on the Microsoft Store.",
-          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Local On-Device Model, Offline Mode, 100% Private Processing, Native Windows Integration, Arabic Text Extraction",
+          "description": "Native Windows app for extracting printed and handwritten Arabic text from images and PDFs. Runs a local on-device OCR model — 100% private and works offline.",
+          "featureList": "Arabic OCR, Handwriting Recognition, PDF Export, Local On-Device Model, Offline Mode, 100% Private Processing, Native Windows Integration",
           "softwareVersion": "1.0.2",
           "softwareRequirements": "Windows 10 version 14316.0 or higher",
           "datePublished": "2026-07-30",
@@ -2006,32 +2000,36 @@ Your job:
             "availability": "https://schema.org/InStock",
             "category": "free"
           },
-          "author": {
-            "@type": "Person",
-            "name": "Ziad Khazzaka",
-            "sameAs": "https://www.linkedin.com/in/ziad-khazzaka-788526362"
-          },
-          "publisher": {
-            "@id": "https://www.kanzati.com"
-          }
+          "author": { "@id": "https://arabic-ocr.com/#developer" },
+          "publisher": { "@id": "https://www.kanzati.com" },
+          "sameAs": "https://apps.microsoft.com/detail/9P2NRS4S8ND6"
         },
         {
           "@type": "WebApplication",
+          "@id": "https://arabic-ocr.com/#web-app",
           "name": "Arabic OCR – Web Portal",
           "url": "https://arabic-ocr.com/portal.html",
           "applicationCategory": "UtilitiesApplication",
           "browserRequirements": "Requires a modern web browser",
-          "description": "Online Arabic OCR portal. Upload images and PDFs to extract Arabic text instantly, no app install required.",
-          "featureList": "Online Arabic OCR, PDF to Text, Image to Text, Arabic Text Editor, Multiple Font Support",
+          "image": "https://arabic-ocr.com/icon.png",
+          "description": "Online Arabic OCR portal. Upload images and PDFs to extract Arabic text instantly, no app install required. AI-powered with refine, translate, and summarize features.",
+          "featureList": "Online Arabic OCR, PDF to Text, Image to Text, AI Refine, Translate, Summarize, Multiple Export Formats",
+          "inLanguage": ["ar", "en"],
           "offers": {
             "@type": "Offer",
             "price": "0",
             "priceCurrency": "USD",
             "category": "free"
           },
-          "publisher": {
-            "@id": "https://www.kanzati.com"
-          }
+          "author": { "@id": "https://arabic-ocr.com/#developer" },
+          "publisher": { "@id": "https://www.kanzati.com" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://arabic-ocr.com/#developer",
+          "name": "Ziad Khazzaka",
+          "jobTitle": "Developer",
+          "sameAs": "https://www.linkedin.com/in/ziad-khazzaka-788526362"
         }
       ]
     }
