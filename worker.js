@@ -1372,6 +1372,7 @@ async function handlePaddleWebhook(req, env, headers) {
         const uid      = data.custom_data?.uid;
         const isGuest  = !uid || uid === "guest";
         const email    = data.customer?.email || "unknown";
+        const countryCode = data.address?.country_code || data.customer?.address?.country_code || data.billing_details?.country_code || "";
         const items    = data.items || [];
 
         for (const item of items) {
@@ -1384,7 +1385,7 @@ async function handlePaddleWebhook(req, env, headers) {
             if (!isGuest) {
               await firestoreIncrementPages(uid, pages, accessToken);
               console.log(`Credited ${pages} pages to user ${uid}`);
-              await logGA4Purchase(env, uid, data.id, amount, data.currency_code || "USD", priceId, `${pages} Pages Pack`, "pages");
+              // GA4 purchase event sent client-side (paddle-payment.js) with geo data — skip here to avoid duplicates
 
               // Reset low balance flag after page purchase
               await firestorePatchUser(uid, {
@@ -1420,7 +1421,7 @@ async function handlePaddleWebhook(req, env, headers) {
             if (!isGuest) {
               await firestoreSetPro(uid, subPlan, accessToken);
               console.log(`Set Pro (${subPlan}) for user ${uid}`);
-              await logGA4Purchase(env, uid, data.id, amount, data.currency_code || "USD", priceId, `Pro ${subPlan} Subscription`, "subscription");
+              // GA4 purchase event sent client-side (paddle-payment.js) with geo data — skip here to avoid duplicates
             }
             await sendSaleNotification(env, {
               platform: "web", product: `Pro ${subPlan} Subscription`, productId: priceId,
@@ -1554,12 +1555,30 @@ async function verifyPaddleSignature(rawBody, signatureHeader, secret) {
 // GA4 Analytics
 // ═══════════════════════════════════════════════════════════════════
 
-async function logGA4Purchase(env, uid, transactionId, value, currency, itemId, itemName, itemCategory) {
+async function logGA4Purchase(env, uid, transactionId, value, currency, itemId, itemName, itemCategory, countryCode) {
   if (!env.GA4_API_SECRET) {
     console.log("GA4_API_SECRET not set, skipping analytics");
     return;
   }
   try {
+    const params = {
+      transaction_id: transactionId,
+      value,
+      currency,
+      source: "worker",
+      items: [{
+        item_id: itemId,
+        item_name: itemName,
+        item_category: itemCategory,
+        price: value,
+        quantity: 1,
+      }],
+    };
+    // Add country if available (from Paddle/payment provider)
+    if (countryCode) {
+      params.country = countryCode;
+    }
+
     const res = await fetch(
       `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${env.GA4_API_SECRET}`,
       {
@@ -1568,22 +1587,8 @@ async function logGA4Purchase(env, uid, transactionId, value, currency, itemId, 
         body: JSON.stringify({
           client_id: uid,
           user_id: uid,
-          events: [{
-            name: "purchase",
-            params: {
-              transaction_id: transactionId,
-              value,
-              currency,
-              source: "worker",
-              items: [{
-                item_id: itemId,
-                item_name: itemName,
-                item_category: itemCategory,
-                price: value,
-                quantity: 1,
-              }],
-            },
-          }],
+          user_properties: countryCode ? { country: { value: countryCode } } : undefined,
+          events: [{ name: "purchase", params }],
         }),
       }
     );
