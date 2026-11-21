@@ -482,7 +482,8 @@ async function brevoTrackEvent(env, uid, eventType, extraAttributes) {
         const plan = userDoc?.fields?.plan?.stringValue || "free";
         attributes.PAGES_BALANCE = balance;
         attributes.PLAN_TYPE = plan;
-        if (plan !== "pro" && balance < 5 && balance >= 0) {
+        const totalPurchased = parseInt(userDoc?.fields?.ocrPagesTotal?.integerValue || "0");
+        if (plan !== "pro" && totalPurchased > 0 && balance < 5 && balance >= 0) {
           attributes.LOW_BALANCE = true;
         }
         break;
