@@ -1242,30 +1242,63 @@
         /* ===== PRO NUDGE BOTTOM SHEET ===== */
         #pro-nudge-sheet {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            inset: 0;
             z-index: 100;
-            background: white;
+            display: flex;
+            align-items: flex-end;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #pro-nudge-sheet.show {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        #pro-nudge-sheet .nudge-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+        }
+        #pro-nudge-sheet .nudge-panel {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(135deg, #FFCB05, #f59e0b);
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
             padding: 28px 24px 32px;
             transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        #pro-nudge-sheet.show {
+        #pro-nudge-sheet.show .nudge-panel {
             transform: translateY(0);
         }
-        #pro-nudge-sheet .nudge-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.3);
-            z-index: -1;
+        #pro-nudge-sheet h3 { color: #1a1a1a; }
+        #pro-nudge-sheet p,
+        #pro-nudge-sheet .nudge-feature { color: #422006; }
+        #pro-nudge-sheet .nudge-price { color: #1a1a1a; }
+        #pro-nudge-sheet .nudge-card {
+            background: rgba(255,255,255,0.85);
+            border-color: rgba(255,255,255,0.5);
         }
-        body.dark-mode #pro-nudge-sheet {
-            background: #1e293b;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+        #pro-nudge-sheet .nudge-card-featured {
+            background: #ffffff;
+            border-color: #1a1a1a;
+        }
+        body.dark-mode #pro-nudge-sheet .nudge-panel {
+            background: linear-gradient(135deg, #b8860b, #92400e);
+        }
+        body.dark-mode #pro-nudge-sheet h3,
+        body.dark-mode #pro-nudge-sheet .nudge-price { color: #ffffff; }
+        body.dark-mode #pro-nudge-sheet p,
+        body.dark-mode #pro-nudge-sheet .nudge-feature { color: #fef3c7; }
+        body.dark-mode #pro-nudge-sheet .nudge-card {
+            background: rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.2);
+        }
+        body.dark-mode #pro-nudge-sheet .nudge-card-featured {
+            background: rgba(0,0,0,0.4);
+            border-color: #FFCB05;
         }
 
         /* ===== TRIAL BANNER ===== */
@@ -2449,47 +2482,49 @@
     <!-- ===== PRO NUDGE BOTTOM SHEET ===== -->
     <div id="pro-nudge-sheet">
         <div class="nudge-backdrop" onclick="document.getElementById('pro-nudge-sheet').classList.remove('show'); sessionStorage.setItem('proNudgeDismissed','1');"></div>
+        <div class="nudge-panel">
         <div style="max-width:480px;margin:0 auto;text-align:center;">
-            <div style="width:48px;height:48px;background:linear-gradient(135deg,#fbbf24,#f59e0b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-                <i class="fas fa-crown" style="color:white;font-size:20px;"></i>
+            <div style="width:48px;height:48px;background:#1a1a1a;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                <i class="fas fa-crown" style="color:#FFCB05;font-size:20px;"></i>
             </div>
-            <h3 style="font-size:20px;font-weight:800;color:#1e293b;margin:0 0 6px;">Unlock the Full Experience</h3>
-            <p style="font-size:14px;color:#64748b;margin:0 0 20px;">Upgrade to Pro and get everything Arabic OCR has to offer.</p>
+            <h3 style="font-size:20px;font-weight:800;margin:0 0 6px;">Unlock the Full Experience</h3>
+            <p style="font-size:14px;margin:0 0 20px;">Upgrade to Pro and get everything Arabic OCR has to offer.</p>
             <div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:20px;">
-                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                <div class="nudge-feature" style="display:flex;align-items:center;gap:10px;font-size:14px;">
                     <i class="fas fa-infinity" style="color:#f59e0b;width:18px;text-align:center;"></i> Unlimited scans — no monthly limits
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                <div class="nudge-feature" style="display:flex;align-items:center;gap:10px;font-size:14px;">
                     <i class="fas fa-wand-magic-sparkles" style="color:#f59e0b;width:18px;text-align:center;"></i> AI Refine, Translate & Summarize
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                <div class="nudge-feature" style="display:flex;align-items:center;gap:10px;font-size:14px;">
                     <i class="fas fa-file-pdf" style="color:#f59e0b;width:18px;text-align:center;"></i> Batch PDF scanning & all export formats
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#334155;">
+                <div class="nudge-feature" style="display:flex;align-items:center;gap:10px;font-size:14px;">
                     <i class="fas fa-bolt" style="color:#f59e0b;width:18px;text-align:center;"></i> Instant results — no waiting
                 </div>
             </div>
             <div style="display:flex;gap:10px;margin-bottom:12px;">
-                <div style="flex:1;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;">
+                <div class="nudge-card" style="flex:1;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;">
                     <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Monthly</div>
-                    <div style="font-size:22px;font-weight:800;color:#1e293b;">$9.99</div>
+                    <div class="nudge-price" style="font-size:22px;font-weight:800;">$9.99</div>
                     <div style="font-size:11px;color:#94a3b8;">/month</div>
                 </div>
-                <div style="flex:1;border:2px solid #f59e0b;border-radius:12px;padding:12px;text-align:center;background:#fffbeb;position:relative;">
+                <div class="nudge-card nudge-card-featured" style="flex:1;border:2px solid #f59e0b;border-radius:12px;padding:12px;text-align:center;background:#fffbeb;position:relative;">
                     <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#f59e0b;color:white;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;">SAVE 58%</div>
                     <div style="font-size:11px;color:#92400e;font-weight:700;text-transform:uppercase;">Yearly</div>
-                    <div style="font-size:22px;font-weight:800;color:#1e293b;">$49.99</div>
+                    <div class="nudge-price" style="font-size:22px;font-weight:800;">$49.99</div>
                     <div style="font-size:11px;color:#94a3b8;"><s>$9.99/mo</s> → $4.17/mo</div>
                 </div>
             </div>
             <button onclick="document.getElementById('pro-nudge-sheet').classList.remove('show'); sessionStorage.setItem('proNudgeDismissed','1'); document.getElementById('pricing-modal').classList.remove('hidden');"
-                style="width:100%;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-weight:700;font-size:15px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">
+                style="width:100%;padding:14px;background:#1a1a1a;color:#FFCB05;font-weight:700;font-size:15px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">
                 Upgrade Now
             </button>
             <button onclick="document.getElementById('pro-nudge-sheet').classList.remove('show'); sessionStorage.setItem('proNudgeDismissed','1');"
-                style="width:100%;padding:10px;background:transparent;color:#94a3b8;font-size:13px;border:none;cursor:pointer;">
+                style="width:100%;padding:10px;background:transparent;color:#78350f;font-size:13px;border:none;cursor:pointer;opacity:0.7;">
                 Maybe Later
             </button>
+        </div>
         </div>
     </div>
 

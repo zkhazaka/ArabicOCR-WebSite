@@ -74,6 +74,66 @@ export default {
       }
     }
 
+    // ── Brevo debug: test attribute update and return full response ──
+    if (url.pathname === "/brevo/debug-update" && req.method === "POST") {
+      const token = req.headers.get("X-App-Token");
+      if (token !== "ocr_app_2026_kanzati" && token !== env.WINDOWS_APP_TOKEN)
+        return new Response("Unauthorized", { status: 403, headers });
+      try {
+        const body = await req.json();
+        const { email, attributes } = body;
+        if (!env.BREVO_API_KEY) return new Response(JSON.stringify({ error: "No BREVO_API_KEY" }), { status: 500, headers });
+        const brevoRes = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+          method: "PUT",
+          headers: { "Accept": "application/json", "Content-Type": "application/json", "api-key": env.BREVO_API_KEY },
+          body: JSON.stringify({ attributes }),
+        });
+        const status = brevoRes.status;
+        let resBody;
+        try { resBody = await brevoRes.json(); } catch { resBody = await brevoRes.text(); }
+        // Also GET the contact to see current state
+        const getRes = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+          headers: { "Accept": "application/json", "api-key": env.BREVO_API_KEY },
+        });
+        const contact = await getRes.json();
+        return new Response(JSON.stringify({ putStatus: status, putResponse: resBody, contact: contact.attributes }, null, 2), { status: 200, headers });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+      }
+    }
+
+    // ── Brevo event debug: test Track Event API directly ────────
+    if (url.pathname === "/brevo/debug-event" && req.method === "POST") {
+      const token = req.headers.get("X-App-Token");
+      if (token !== "ocr_app_2026_kanzati" && token !== env.WINDOWS_APP_TOKEN)
+        return new Response("Unauthorized", { status: 403, headers });
+      try {
+        const body = await req.json();
+        const { email, event } = body;
+        const apiKey = env.BREVO_API_KEY;
+        if (!apiKey) return new Response(JSON.stringify({ error: "BREVO_API_KEY not set" }), { status: 500, headers });
+        const payload = {
+          event_name: event || "test_event",
+          identifiers: { email_id: (email || "").trim().toLowerCase() },
+          properties: { test: true },
+        };
+        const res = await fetch("https://api.brevo.com/v3/events", {
+          method: "POST",
+          headers: { "Accept": "application/json", "Content-Type": "application/json", "api-key": apiKey },
+          body: JSON.stringify(payload),
+        });
+        let resBody;
+        try { resBody = await res.json(); } catch { resBody = await res.text(); }
+        return new Response(JSON.stringify({
+          status: res.status,
+          response: resBody,
+          payload,
+        }, null, 2), { status: 200, headers });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+      }
+    }
+
     // ── Brevo event tracking (all platforms) ────────────────────
     if (url.pathname === "/brevo/track" && req.method === "POST") {
       return handleBrevoTrack(req, env, headers);
@@ -301,9 +361,9 @@ export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(Promise.all([
       syncNewUsersToBrevo(env),
-      brevoCheckLowBalance(env),
       brevoCheckInactiveUsers(env),
-      brevoCheckFreeLimitUsers(env),
+      // brevoCheckLowBalance and brevoCheckFreeLimitUsers removed —
+      // now triggered in real-time by apps via /brevo/track + brevoSendEvent
     ]));
   },
 };
@@ -325,20 +385,20 @@ export default {
 //   PLAN_TYPE          (text)    — free, pro, pages
 //   PAGES_BALANCE      (number)  — current page balance
 //   LOW_BALANCE        (boolean) — true when balance < 5
-//   FREE_LIMIT_HIT     (boolean) — true when free user exhausted monthly scans
+//   FREE_LIMIT_HIT     (boolean) — true when user exhausted trial scans
 //   INACTIVE_14D       (boolean) — true when no scan in 14 days
 //   INACTIVE_30D       (boolean) — true when no scan in 30 days
 //   TRIAL_PRODUCT      (text)    — product name if trial started
 //   TRIAL_DATE         (date)    — date trial started
 //
-// Brevo automations to create:
-//   1. Onboarding drip:   trigger = SIGNUP_DATE is set, wait 2d → email, wait 3d → email, wait 2d → email
-//   2. Low balance:       trigger = LOW_BALANCE changed to true → email
-//   3. Free limit hit:    trigger = FREE_LIMIT_HIT changed to true → email
-//   4. Re-engagement 14d: trigger = INACTIVE_14D changed to true → email
-//   5. Re-engagement 30d: trigger = INACTIVE_30D changed to true → email
-//   6. Post-purchase:     trigger = LAST_PURCHASE_DATE is updated → email
-//   7. Upgrade nudge:     trigger = SIGNUP_DATE + 7 days AND PLAN_TYPE = "free" → email
+// Brevo automations — use Custom Event triggers (not attribute filters):
+//   1. Welcome:           trigger = Custom Event "signup"
+//   2. Low balance:       trigger = Custom Event "low_balance"
+//   3. Free limit hit:    trigger = Custom Event "free_limit_hit"
+//   4. Re-engagement 14d: trigger = Custom Event "inactive_14d" (auto via cron)
+//   5. Re-engagement 30d: trigger = Custom Event "inactive_30d" (auto via cron)
+//   6. Post-purchase:     trigger = Custom Event "purchase"
+// Events sent via brevoSendEvent() using Brevo Track Event API (ma-key auth)
 
 function todayISO() {
   return new Date().toISOString().split("T")[0];
@@ -363,6 +423,32 @@ async function brevoUpdateContact(env, email, attributes) {
     });
   } catch (e) {
     console.error(`[brevo] Failed to update ${email}:`, e.message);
+  }
+}
+
+/**
+ * Send a Brevo Custom Event — triggers automations immediately via Custom Event triggers.
+ * Uses the Brevo API /v3/events endpoint with the same BREVO_API_KEY.
+ */
+async function brevoSendEvent(env, email, eventName, properties = {}) {
+  if (!env.BREVO_API_KEY || !email) return;
+  try {
+    const res = await fetch("https://api.brevo.com/v3/events", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "api-key": env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        event_name: eventName,
+        identifiers: { email_id: email.trim().toLowerCase() },
+        properties: properties,
+      }),
+    });
+    console.log(`[brevo-event] Sent ${eventName} for ${email} (${res.status})`);
+  } catch (e) {
+    console.error(`[brevo-event] Failed ${eventName} for ${email}:`, e.message);
   }
 }
 
@@ -432,6 +518,17 @@ async function brevoTrackEvent(env, uid, eventType, extraAttributes) {
     }
 
     await brevoUpdateContact(env, email, attributes);
+
+    // Send real Brevo track events to trigger automations immediately
+    const automationEvents = ["purchase", "subscription_activated", "free_limit_hit", "scan_complete"];
+    if (automationEvents.includes(eventType)) {
+      await brevoSendEvent(env, email, eventType, attributes);
+    }
+    // If low balance detected during scan_complete, also fire low_balance event
+    if (attributes.LOW_BALANCE === true && eventType === "scan_complete") {
+      await brevoSendEvent(env, email, "low_balance", { balance: attributes.PAGES_BALANCE, plan: attributes.PLAN_TYPE });
+    }
+
     console.log(`[brevo] Tracked ${eventType} for ${email}`);
   } catch (e) {
     console.error(`[brevo] Track event failed for ${uid}:`, e.message);
@@ -465,12 +562,15 @@ async function handleBrevoTrack(req, env, headers) {
 
   // If email is provided directly (e.g., from web where UID lookup isn't needed)
   if (email && !uid) {
-    await brevoUpdateContact(env, email, {
+    const mergedAttrs = {
       ...(attributes || {}),
       ...(event === "scan_complete" ? { LAST_SCAN_DATE: todayISO() } : {}),
       ...(event === "login" ? { LAST_LOGIN_DATE: todayISO() } : {}),
       ...(event === "free_limit_hit" ? { FREE_LIMIT_HIT: true } : {}),
-    });
+    };
+    await brevoUpdateContact(env, email, mergedAttrs);
+    // Send track event to trigger automations
+    await brevoSendEvent(env, email, event, mergedAttrs);
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
   }
 
@@ -712,12 +812,14 @@ async function brevoCheckInactiveUsers(env) {
           brevoInactive14Notified: { booleanValue: true },
         }, accessToken);
         count30++;
+        await brevoSendEvent(env, email, "inactive_30d", { last_scan: lastScan });
       } else if (is14 && doc.fields.brevoInactive14Notified?.booleanValue !== true) {
         attrs.INACTIVE_14D = true;
         await firestorePatchUser(uid, {
           brevoInactive14Notified: { booleanValue: true },
         }, accessToken);
         count14++;
+        await brevoSendEvent(env, email, "inactive_14d", { last_scan: lastScan });
       } else {
         continue; // Already notified
       }
@@ -734,7 +836,7 @@ async function brevoCheckInactiveUsers(env) {
 }
 
 /**
- * Check for free users who have exhausted their monthly free scans
+ * Check for free users who have exhausted their 10 trial scans
  */
 async function brevoCheckFreeLimitUsers(env) {
   if (!env.BREVO_API_KEY) return;
@@ -743,7 +845,7 @@ async function brevoCheckFreeLimitUsers(env) {
     const accessToken = await getFirestoreAccessToken(env);
     const queryUrl = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents:runQuery`;
 
-    // Query free users who have used all their free scans this month
+    // Query free users who have used all 10 trial scans
     const res = await fetch(queryUrl, {
       method: "POST",
       headers: {
@@ -755,7 +857,7 @@ async function brevoCheckFreeLimitUsers(env) {
           from: [{ collectionId: "users" }],
           where: {
             fieldFilter: {
-              field: { fieldPath: "freeScansUsedThisMonth" },
+              field: { fieldPath: "trialScansUsed" },
               op: "GREATER_THAN_OR_EQUAL",
               value: { integerValue: "10" },
             },
@@ -931,6 +1033,8 @@ async function syncNewUsersToBrevo(env) {
         accessToken
       );
       syncedCount++;
+      // Send signup event to trigger Welcome automation
+      await brevoSendEvent(env, email, "signup", { platform, signup_date: todayISO() });
       console.log(`[brevo-cron] Synced ${email} (${uid}) from ${platform}`);
     } else {
       const errText = await brevoRes.text();
@@ -1566,7 +1670,7 @@ async function sendTrialNotification(env, sale) {
     `Product: ${sale.product} (${sale.productId})`,
     `User: ${sale.uid}`,
     `Time: ${new Date().toISOString()}`,
-    `→ 7-day free trial — will convert in 7 days`,
+    `→ 3-day free trial — 10 trial scans`,
   ].join("\n");
 
   if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
@@ -1848,7 +1952,7 @@ COMMON QUESTIONS:
 Q: Do pages expire? A: No, page credits never expire.
 Q: Can I use my pages on multiple devices? A: Yes, one balance syncs automatically across all platforms.
 Q: What languages can it translate to? A: Any language — powered by AI.
-Q: Is there a free trial? A: Yes — 1 free scan/day on the website, no account needed.
+Q: Is there a free trial? A: Yes — new users get 10 free scans during a 3-day trial. The website also offers 1 free scan/day with no account.
 Q: How accurate is the OCR? A: Very high for printed Arabic. Handwriting accuracy depends on clarity and style.
 Q: Can I cancel my subscription? A: Yes, anytime from arabic-ocr.com/subscription.html
 Q: Is there a discount? A: Yes! Use code GS7ROCLMYB for 10% off any plan on any platform.

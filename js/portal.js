@@ -6,6 +6,17 @@ import { getPagesBalance, useOnePage, getFreeScansRemaining, useOneFreeScan, get
 
 const GEMINI_OCR_PROXY = "https://arabicocr.zczvwz6pw7.workers.dev";
 
+// ── Brevo Event Tracking ────────────────────────────────────────
+function trackBrevoEvent(eventName, extraAttributes = {}) {
+    const user = auth.currentUser;
+    if (!user?.email) return;
+    fetch(`${GEMINI_OCR_PROXY}/brevo/track`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-App-Token": "ocr_app_2026_kanzati" },
+        body: JSON.stringify({ uid: user.uid, email: user.email, event: eventName, attributes: extraAttributes }),
+    }).catch(() => {});
+}
+
 // ── Feature Gating ──────────────────────────────────────────────
 window.isTrialActive = false;
 window.trialDaysLeft = 0;
@@ -401,6 +412,11 @@ function updateProgress(step) {
 
 // File Handling
 dropZone.addEventListener('click', () => {
+    // If trial ended or no balance, show pricing modal instead of file picker
+    if (window.userTier === 'free' && !window.isTrialActive) {
+        document.getElementById('pricing-modal')?.classList.remove('hidden');
+        return;
+    }
     fileInput.click();
 });
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500'); });
@@ -408,9 +424,18 @@ dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-b
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('border-blue-500');
+    if (window.userTier === 'free' && !window.isTrialActive) {
+        document.getElementById('pricing-modal')?.classList.remove('hidden');
+        return;
+    }
     if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
 });
 fileInput.addEventListener('change', (e) => {
+    if (window.userTier === 'free' && !window.isTrialActive) {
+        document.getElementById('pricing-modal')?.classList.remove('hidden');
+        e.target.value = '';
+        return;
+    }
     if (e.target.files.length) handleFile(e.target.files[0]);
 });
 
@@ -734,6 +759,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                     window.isTrialActive = false;
                     document.body.classList.add('free-tier');
                     document.body.classList.remove('trial-active');
+                    trackBrevoEvent("free_limit_hit");
                     quill.setText('');
                     quill.clipboard.dangerouslyPasteHTML(0,
                         '<p><strong style="color:#dc2626;">You\'ve used all 10 trial scans.</strong></p>' +
@@ -760,6 +786,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         if (statusDisplay) statusDisplay.textContent = `Trial · ${remaining} scans`;
 
                         if (remaining === 0) {
+                            trackBrevoEvent("free_limit_hit");
                             setTimeout(() => showToast('That was your last trial scan. Upgrade for unlimited!', 'warning', 5000), 500);
                         } else if (remaining === 5) {
                             setTimeout(() => showToast('5 trial scans remaining. Upgrade for unlimited scanning.', 'info', 5000), 1000);
@@ -789,6 +816,7 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                     if (statusDisplay) statusDisplay.textContent = `Pages · ${remaining} remaining`;
 
                     if (remaining === 0) {
+                        trackBrevoEvent("low_balance", { balance: 0 });
                         window.userTier = 'free';
                         window.isProUser = false;
                         window.isPagesUser = false;
@@ -796,6 +824,8 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                         // Fall back to free tier
                         window.freeScansLeft = await getFreeScansRemaining(auth.currentUser.uid);
                         setTimeout(() => showToast('You\'ve used all your purchased pages. Purchase more or upgrade to Pro for unlimited.', 'warning', 5000), 500);
+                    } else if (remaining < 5) {
+                        trackBrevoEvent("low_balance", { balance: remaining });
                     }
                 }
 
@@ -806,6 +836,9 @@ async function processOCR(base64Image, stepAlreadyShown = false) {
                 textContent.original = fullText;
                 textContent.refined = '';
             }
+
+            // Track scan completion for Brevo (activity tracking for inactivity detection)
+            trackBrevoEvent("scan_complete");
 
             // Calculate word count from extracted text
             const totalWords = fullText.trim().split(/\s+/).filter(w => w.length > 0).length;
